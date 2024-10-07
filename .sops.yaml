@@ -1,0 +1,7 @@
+keys:
+  - &admin_spider 7f9e89938fbb70e6c011314b4d15f1335e80f9a4
+creation_rules:
+  - path_regex: secrets/[^/]+\.(yaml|json|env|ini)$
+    key_groups:
+      - pgp:
+        - *admin_spider
