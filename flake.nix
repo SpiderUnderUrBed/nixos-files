@@ -6,10 +6,13 @@
 #    nixcord = {
 #      url = "github:kaylorben/nixcord"
 #    };
+<<<<<<< HEAD
+=======
     sober = {
       url = "https://sober.vinegarhq.org/sober.flatpakref";
       flake = false;
     };
+>>>>>>> cdcb124 (Initial commit)
     home-manager = {
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -69,11 +72,19 @@
         auto-cpufreq.nixosModules.default
         ./vfio.nix
         ./configuration.nix
+<<<<<<< HEAD
+        home-manager.nixosModules.home-manager
+        {
+          home-manager.useGlobalPkgs = true;
+          home-manager.useUserPackages = true;
+        }
+=======
 	home-manager.nixosModules.home-manager
 	{
 	  home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
 	}
+>>>>>>> cdcb124 (Initial commit)
         {
           environment.systemPackages = with pkgs; [
             envycontrol.packages.${system}.default
@@ -88,3 +99,7 @@
     };
   };
 }
+<<<<<<< HEAD
+
+=======
+>>>>>>> cdcb124 (Initial commit)

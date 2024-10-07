@@ -12,6 +12,9 @@
   boot.initrd.kernelModules = [ ];
   boot.kernelModules = [ "kvm-intel" ];
   boot.extraModulePackages = [ ];
+<<<<<<< HEAD
+
+=======
   
  # fileSystems."/run/bees/mnt/0095faf2-2359-4515-a1e1-af7ef6f11a0f" = {
 #	device = "/btrfs.img";
@@ -19,15 +22,21 @@
 #        options = [ "subvol=@" "compress=zstd" ];
 #      	#label = "root";
 #  };
+>>>>>>> cdcb124 (Initial commit)
   fileSystems."/" =
     {
       # I am testing out my abbility to change whats mounted as the root partition to be another device in the storage pool
       # dd28e1bb-dae0-4794-b8ae-8d52b8bd9189
       # 629b4fa3-d953-4b25-a219-0552ec6aeb39
       # ^ is correct
+<<<<<<< HEAD
+        # 
+      device = "/dev/disk/by-uuid/629b4fa3-d953-4b25-a219-0552ec6aeb39";
+=======
 	# 
 #0095faf2-2359-4515-a1e1-af7ef6f11a0f
       device = "/dev/disk/by-uuid/0095faf2-2359-4515-a1e1-af7ef6f11a0f";
+>>>>>>> cdcb124 (Initial commit)
       fsType = "btrfs";
       options = [ "subvol=@" "compress=zstd" ];
       label = "root";
@@ -50,6 +59,16 @@
 
  # boot.loader.systemd-boot.enable = true;
   boot.initrd.luks.devices = {
+<<<<<<< HEAD
+        # i manually added the subvolumes with luks-UUID 
+        #NOTE THIS WONT WORK
+        #"luks-629b4fa3-d953-4b25-a219-0552ec6aeb39".device = "/dev/disk/by-uuid/629b4fa3-d953-4b25-a219-0552ec6aeb39";
+        # 629b4fa3-d953-4b25-a219-0552ec6aeb39
+        # End of subvolmes
+#        "encrypted".device = "/dev/disk/by-uuid/315e8f8a-64f4-48bb-a934-69034ab59b46";
+#       "luks-dd28e1bb-dae0-4794-b8ae-8d52b8bd9189".device = "/dev/disk/by-uuid/dd28e1bb-dae0-4794-b8ae-8d52b8bd9189";
+        "luks-d7b25073-d690-4163-b3f0-5de410afe535".device = "/dev/disk/by-uuid/d7b25073-d690-4163-b3f0-5de410afe535";
+=======
 	# i manually added the subvolumes with luks-UUID 
 	#NOTE THIS WONT WORK
 	#"luks-629b4fa3-d953-4b25-a219-0552ec6aeb39".device = "/dev/disk/by-uuid/629b4fa3-d953-4b25-a219-0552ec6aeb39";
@@ -58,12 +77,24 @@
 #	"encrypted".device = "/dev/disk/by-uuid/315e8f8a-64f4-48bb-a934-69034ab59b46";
 #	"luks-dd28e1bb-dae0-4794-b8ae-8d52b8bd9189".device = "/dev/disk/by-uuid/dd28e1bb-dae0-4794-b8ae-8d52b8bd9189";
 	"luks-d7b25073-d690-4163-b3f0-5de410afe535".device = "/dev/disk/by-uuid/d7b25073-d690-4163-b3f0-5de410afe535";
+>>>>>>> cdcb124 (Initial commit)
   };
   #629b4fa3-d953-4b25-a219-0552ec6aeb39
    #boot.initrd.luks.devices.
 
 
   swapDevices = [
+<<<<<<< HEAD
+#       {#
+#       device = "/dev/nvme0n1p1";
+#       }
+#       {
+#       device = "/dev/nvme1n1p1";
+#       }
+        {
+        device = "/dev/disk/by-uuid/8642bd90-d6a5-4789-8095-42e9939a1374";
+        }
+=======
 #	{#
 #	device = "/dev/nvme0n1p1";
 # 	}
@@ -73,6 +104,7 @@
 	{
 	device = "/dev/disk/by-uuid/8642bd90-d6a5-4789-8095-42e9939a1374";
 	}
+>>>>>>> cdcb124 (Initial commit)
   ];
 
   zramSwap = {

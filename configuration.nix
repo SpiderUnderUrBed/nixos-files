@@ -381,7 +381,11 @@ in
 
   #igpuWithPipe = builtins.readFile myPipe;
 systemd.services = {
+<<<<<<< HEAD
+waydroid-container.wantedBy = lib.mkForce [];
+=======
 #waydroid-container.wantedBy = lib.mkForce [];
+>>>>>>> cdcb124 (Initial commit)
 #export KWIN_DRM_DEVICES=$(realpath /dev/dri/by-path/pci-0000\:00\:02.0-card)
 #env-vars = {
 #    wantedBy = ["multi-user.target"];
@@ -617,9 +621,12 @@ services.tailscale.enable = true;
  # };
 
 services = {
+<<<<<<< HEAD
+=======
 mullvad-vpn = {
 enable = false;
 };
+>>>>>>> cdcb124 (Initial commit)
 #protonmail-bridge = {
 #  enable = true;
 #  package =
@@ -1075,8 +1082,13 @@ enable = false;
 	logseq
 	rage
 	onlyoffice-bin
+<<<<<<< HEAD
+	vesktop
+ #       libreoffice-qt
+=======
 #	vesktop
 #       libreoffice-qt
+>>>>>>> cdcb124 (Initial commit)
       #  hunspell
       #  hunspellDicts.uk_UA
       #  hunspellDicts.th_TH#
@@ -1683,7 +1695,10 @@ services.openssh = {
 	   "cimiefiiaegbelhefglklhhakcgmhkai" #plasma intergration
 	   "ghbmnnjooekpmoecnnnilnnbdlolhkhi" #google docs offline
 	   "kaacflffkmlaiebklgemhmlfbhificko" #imdb torrent search 
+<<<<<<< HEAD
+=======
 	   "kbfnbcaeplbcioakkpcpgfkobkghlhen" #grammerly
+>>>>>>> cdcb124 (Initial commit)
        ];
     };
     firefox = {
@@ -1719,10 +1734,13 @@ services.openssh = {
 		    install_url = "https://addons.mozilla.org/firefox/downloads/latest/dearrow/latest.xpi";
 		    installation_mode = "force_installed";
 		};
+<<<<<<< HEAD
+=======
 		"87677a2c52b84ad3a151a4a72f5bd3c4@jetpack" = {
 		    install_url = "https://addons.mozilla.org/firefox/downloads/latest/grammarly-1/latest.xpi";
 		    installation_mode = "force_installed";
 		};
+>>>>>>> cdcb124 (Initial commit)
     	  };
     };
 #    chromium = {

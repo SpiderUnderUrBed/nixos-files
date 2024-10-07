@@ -1,3 +1,5 @@
 /archives
 /test
 /acer-predator-turbo-and-rgb-keyboard-linux-module
+.sops.yaml
+/sops-nix

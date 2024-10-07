@@ -1,4 +1,11 @@
 # home.nix
+<<<<<<< HEAD
+{ lib, ... }: {
+
+  # nix-flatpak setup
+  services.flatpak.enable = true;
+
+=======
 { lib, ... }:
 inherit (inputs) sober;
 soberPatchedPath = pkgs.writeText "sober.flatpakrepo" (
@@ -8,6 +15,7 @@ soberPatchedPath = pkgs.writeText "sober.flatpakrepo" (
 
   # nix-flatpak setup
   services.flatpak.enable = true;
+>>>>>>> cdcb124 (Initial commit)
   services.flatpak.remotes = lib.mkOptionDefault [
         {
         name = "gol"; location = "https://gol.launcher.moe/gol.launcher.moe.flatpakrepo";
@@ -18,9 +26,12 @@ soberPatchedPath = pkgs.writeText "sober.flatpakrepo" (
         {
         name = "flathub"; location = "https://flathub.org/repo/flathub.flatpakrepo"; 
         }
+<<<<<<< HEAD
+=======
 	{
         name = "sober";  location = "file://${soberPatchedPath}";
         }
+>>>>>>> cdcb124 (Initial commit)
         #{
         #name = "kdeapps"; location = "https://distribute.kde.org/kdeapps.flatpakrepo";
         #}
@@ -33,9 +44,14 @@ soberPatchedPath = pkgs.writeText "sober.flatpakrepo" (
   services.flatpak.update.auto.enable = false;
   services.flatpak.uninstallUnmanagedPackages = true;
   services.flatpak.packages = [
+<<<<<<< HEAD
+	{ appId = "moe.launcher.the-honkers-railway-launcher"; origin = "gol"; }
+	{ appId = "moe.launcher.an-anime-game-launcher"; origin = "gol"; }
+=======
 	{ appId = "org.vinegarhq.Sober"; origin = "sober"; }
 	{ appId = "moe.launcher.the-honkers-railway-launcher"; origin = "gol"; }
 	#{ appId = "moe.launcher.an-anime-game-launcher"; origin = "gol"; }
+>>>>>>> cdcb124 (Initial commit)
 #	"org.emilien.Password"
 	"io.gitlab.idevecore.Pomodoro"
 	"org.inkscape.Inkscape"
@@ -67,11 +83,17 @@ soberPatchedPath = pkgs.writeText "sober.flatpakrepo" (
         "com.obsproject.Studio" 
         "org.gimp.GIMP"
 	"com.visualstudio.code"
+<<<<<<< HEAD
+	"net.brinkervii.grapejuice"
+	"org.vinegarhq.Vinegar"
+	"org.qbittorrent.qBittorrent"
+=======
 #	"net.brinkervii.grapejuice"
 #	"org.vinegarhq.Vinegar"
 	"org.qbittorrent.qBittorrent"
 	"org.nickvision.tubeconverter"
 	"de.haeckerfelix.Shortwave"
+>>>>>>> cdcb124 (Initial commit)
     #{ appId = "com.brave.Browser"; origin = "flathub"; }
     #"com.obsproject.Studio"
     #"im.riot.Riot"
