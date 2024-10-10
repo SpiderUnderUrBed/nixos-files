@@ -1,21 +1,23 @@
 # home.nix
-<<<<<<< HEAD
-{ lib, ... }: {
+#<<<<<<< HEAD
+#{ lib, ... }: {
 
   # nix-flatpak setup
-  services.flatpak.enable = true;
+#  services.flatpak.enable = true;
 
-=======
-{ lib, ... }:
-inherit (inputs) sober;
-soberPatchedPath = pkgs.writeText "sober.flatpakrepo" (
-    builtins.replaceStrings ["[Flatpak Ref]"] ["[Flatpak Repo]"] (builtins.readFile sober.outPath)    
-);
+#=======
+{ lib, pkgs, inputs, ... }:
+let
+#inherit (inputs) sober;
+#soberPatchedPath = pkgs.writeText "sober.flatpakrepo" (
+#    builtins.replaceStrings ["[Flatpak Ref]"] ["[Flatpak Repo]"] (builtins.readFile sober.outPath)    
+#);
+in
 {
 
   # nix-flatpak setup
   services.flatpak.enable = true;
->>>>>>> cdcb124 (Initial commit)
+#>>>>>>> cdcb124 (Initial commit)
   services.flatpak.remotes = lib.mkOptionDefault [
         {
         name = "gol"; location = "https://gol.launcher.moe/gol.launcher.moe.flatpakrepo";
@@ -26,12 +28,12 @@ soberPatchedPath = pkgs.writeText "sober.flatpakrepo" (
         {
         name = "flathub"; location = "https://flathub.org/repo/flathub.flatpakrepo"; 
         }
-<<<<<<< HEAD
-=======
-	{
-        name = "sober";  location = "file://${soberPatchedPath}";
-        }
->>>>>>> cdcb124 (Initial commit)
+#<<<<<<< HEAD
+#=======
+#	{
+ #       name = "sober";  location = "file://${soberPatchedPath}";
+#        }
+#>>>>>>> cdcb124 (Initial commit)
         #{
         #name = "kdeapps"; location = "https://distribute.kde.org/kdeapps.flatpakrepo";
         #}
@@ -44,14 +46,16 @@ soberPatchedPath = pkgs.writeText "sober.flatpakrepo" (
   services.flatpak.update.auto.enable = false;
   services.flatpak.uninstallUnmanagedPackages = true;
   services.flatpak.packages = [
-<<<<<<< HEAD
+#<<<<<<< HEAD
 	{ appId = "moe.launcher.the-honkers-railway-launcher"; origin = "gol"; }
 	{ appId = "moe.launcher.an-anime-game-launcher"; origin = "gol"; }
-=======
-	{ appId = "org.vinegarhq.Sober"; origin = "sober"; }
-	{ appId = "moe.launcher.the-honkers-railway-launcher"; origin = "gol"; }
+#=======
+	{ flatpakref = "file:///home/spiderunderurbed/sober.flatpakref"; sha256="54546f6e843b219c180d0bc47168a63ae9e8eef223fb9133b4ebf1087bf048de"; }
+	{ flatpakref = "file:///home/spiderunderurbed/org.gnome.Snapshot.flatpakref"; sha256="7f989f68294ccd11ec61c53872092e2bf7fbb6cef9fcb7ac453ca8f62398da9a"; }
+#	{ appId = "org.vinegarhq.Sober"; origin = "sober"; }
+#	{ appId = "moe.launcher.the-honkers-railway-launcher"; origin = "gol"; }
 	#{ appId = "moe.launcher.an-anime-game-launcher"; origin = "gol"; }
->>>>>>> cdcb124 (Initial commit)
+#>>>>>>> cdcb124 (Initial commit)
 #	"org.emilien.Password"
 	"io.gitlab.idevecore.Pomodoro"
 	"org.inkscape.Inkscape"
@@ -62,7 +66,7 @@ soberPatchedPath = pkgs.writeText "sober.flatpakrepo" (
 	"com.opera.Opera"
 #c	"org.gnome.Calendar"
 	"org.nickvision.tubeconverter"
-	"org.freedesktop.Platform.VulkanLayer.MangoHud"
+	#"org.freedesktop.Platform.VulkanLayer.MangoHud"
 	"io.kapsa.drive"
 	"com.rawtherapee.RawTherapee"
 	"org.eclipse.Java"
@@ -83,17 +87,17 @@ soberPatchedPath = pkgs.writeText "sober.flatpakrepo" (
         "com.obsproject.Studio" 
         "org.gimp.GIMP"
 	"com.visualstudio.code"
-<<<<<<< HEAD
-	"net.brinkervii.grapejuice"
-	"org.vinegarhq.Vinegar"
-	"org.qbittorrent.qBittorrent"
-=======
+#<<<<<<< HEAD
+#	"net.brinkervii.grapejuice"
+#	"org.vinegarhq.Vinegar"
+#	"org.qbittorrent.qBittorrent"
+#=======
 #	"net.brinkervii.grapejuice"
 #	"org.vinegarhq.Vinegar"
 	"org.qbittorrent.qBittorrent"
 	"org.nickvision.tubeconverter"
 	"de.haeckerfelix.Shortwave"
->>>>>>> cdcb124 (Initial commit)
+#>>>>>>> cdcb124 (Initial commit)
     #{ appId = "com.brave.Browser"; origin = "flathub"; }
     #"com.obsproject.Studio"
     #"im.riot.Riot"

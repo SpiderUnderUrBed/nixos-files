@@ -6,13 +6,13 @@
 #    nixcord = {
 #      url = "github:kaylorben/nixcord"
 #    };
-<<<<<<< HEAD
-=======
+#<<<<<<< HEAD
+#=======
     sober = {
       url = "https://sober.vinegarhq.org/sober.flatpakref";
       flake = false;
     };
->>>>>>> cdcb124 (Initial commit)
+#>>>>>>> cdcb124 (Initial commit)
     home-manager = {
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -41,7 +41,8 @@
       url = "github:hercules-ci/arion";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    nix-flatpak.url = "github:gmodena/nix-flatpak";
+    nix-flatpak.url = "github:gmodena/nix-flatpak/install-flatpakref";
+#    nix-flatpak.url = "github:gmodena/nix-flatpak";
  };
 
   outputs = { 
@@ -59,32 +60,57 @@
    # nix-revsocks, 
     lanzaboote, 
     ... 
-  }:
+  } @ inputs :
   let
     system = "x86_64-linux";
     pkgs = nixpkgs.legacyPackages.${system};
+    lib = nixpkgs.lib;
   in
   {
     nixosConfigurations.daspidercave = nixpkgs.lib.nixosSystem {
       inherit system;
+#      nixpkgs.overlays = [ final: prev: {
+#        extraSpecialArgs = {
+#          inherit inputs;  # Pass inputs as extraSpecialArgs
+#        };
+#      }];
+#       nixpkgs.overlays = [
+#         (final: prev: {
+#           extraSpecialArgs = {
+#      	     inherit inputs;  # Pass inputs as extraSpecialArgs
+#     	   };
+#  	  })
+#	];
+
+ #     imports = [
+#	(import ./flatpak.nix { inherit inputs })
+#      ];
       modules = [
         lanzaboote.nixosModules.lanzaboote
         auto-cpufreq.nixosModules.default
         ./vfio.nix
         ./configuration.nix
-<<<<<<< HEAD
-        home-manager.nixosModules.home-manager
-        {
-          home-manager.useGlobalPkgs = true;
-          home-manager.useUserPackages = true;
-        }
-=======
+	#./flatpak.nix
+	(import ./flatpak.nix { inherit lib pkgs inputs; }) 
+#		extraSpecialArgs = {
+#			inherit inputs;
+#		}
+		#inherit inputs; 
+#	})
+#<<<<<<< HEAD
+#        home-manager.nixosModules.home-manager
+#        {
+#          home-manager.useGlobalPkgs = true;
+#          home-manager.useUserPackages = true;
+#        }
+#=======
+	nix-flatpak.nixosModules.nix-flatpak
 	home-manager.nixosModules.home-manager
 	{
 	  home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
 	}
->>>>>>> cdcb124 (Initial commit)
+#>>>>>>> cdcb124 (Initial commit)
         {
           environment.systemPackages = with pkgs; [
             envycontrol.packages.${system}.default
@@ -99,7 +125,7 @@
     };
   };
 }
-<<<<<<< HEAD
+#<<<<<<< HEAD
 
-=======
->>>>>>> cdcb124 (Initial commit)
+#=======
+#>>>>>>> cdcb124 (Initial commit)
