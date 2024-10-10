@@ -44,7 +44,8 @@ in
 ];
 
   services.flatpak.update.auto.enable = false;
-  services.flatpak.uninstallUnmanagedPackages = true;
+  services.flatpak.uninstallUnmanaged = true;
+  #services.flatpak.uninstallUnmanagedPackages = true;
   services.flatpak.packages = [
 #<<<<<<< HEAD
 	{ appId = "moe.launcher.the-honkers-railway-launcher"; origin = "gol"; }
