@@ -8,7 +8,7 @@
 #=======
 { lib, pkgs, inputs, ... }:
 let
-#inherit (inputs) sober;
+inherit (inputs) sober;
 #soberPatchedPath = pkgs.writeText "sober.flatpakrepo" (
 #    builtins.replaceStrings ["[Flatpak Ref]"] ["[Flatpak Repo]"] (builtins.readFile sober.outPath)    
 #);
@@ -30,9 +30,9 @@ in
         }
 #<<<<<<< HEAD
 #=======
-#	{
- #       name = "sober";  location = "file://${soberPatchedPath}";
-#        }
+       #{
+       # name = "sober";  location = "file://${soberPatchedPath}";
+       # }
 #>>>>>>> cdcb124 (Initial commit)
         #{
         #name = "kdeapps"; location = "https://distribute.kde.org/kdeapps.flatpakrepo";

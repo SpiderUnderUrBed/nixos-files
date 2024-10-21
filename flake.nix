@@ -36,13 +36,14 @@
 #      inputs.nixpkgs.follows = "nixpkgs";
 #      inputs.home-manager.follows = "home-manager";
 #    };
+#    sublimation.url = "github:SpiderUnderUrBed/sublimation";
     nix-software-center.url = "github:snowfallorg/nix-software-center";
     arion = {
       url = "github:hercules-ci/arion";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    nix-flatpak.url = "github:gmodena/nix-flatpak/install-flatpakref";
-#    nix-flatpak.url = "github:gmodena/nix-flatpak";
+#    nix-flatpak.url = "github:gmodena/nix-flatpak/force-remote-uninstall";
+    nix-flatpak.url = "github:gmodena/nix-flatpak";
  };
 
   outputs = { 

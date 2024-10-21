@@ -382,7 +382,8 @@ in
   #igpuWithPipe = builtins.readFile myPipe;
 systemd.services = {
 #<<<<<<< HEAD
-waydroid-container.wantedBy = lib.mkForce [];
+#waydroid-container.wantedBy = lib.mkForce [];
+#"app-org.kde.xwaylandvideobridge@autostart.service".wantedBy = lib.mkForce [];
 #=======
 #waydroid-container.wantedBy = lib.mkForce [];
 #>>>>>>> cdcb124 (Initial commit)
@@ -948,12 +949,22 @@ enable = false;
   #environment.etc."jellyfin-ffmpeg" = "${pkgs.jellyfin-ffmpeg.src}";
   environment.systemPackages = with pkgs; [
 	#sswg.swift-lang
+	#fabric-ai
+	#chatgpt-shell-cli
+	avml
+	volatility3
+	wget
+	tuxclocker
 	brave
 	google-chrome
 	home-manager
 	swift
 	xclicker
 	lutris-free
+	android-studio
+	legendary-gl
+	wine
+	nmap
 #	weston
 	#unigine-heaven
 #	envycontrol.packages.x86_64-linux.default
@@ -965,7 +976,7 @@ enable = false;
 	weston
 	expressvpn
 	rustfmt
-	teleport
+#	teleport
 	protonmail-bridge
 	guake
 	cloudflared
@@ -1900,6 +1911,8 @@ services.openssh = {
   # Set the GRUB version if needed
   #boot.loader.grub.version = 2;
 
+  boot.runSize = "100%";
+
   # Optional: configure GRUB for better system support
  # boot.loader.grub.useOSProber = true;  # Detect other OSes if needed
   boot.loader.efi.canTouchEfiVariables = true;
@@ -2054,8 +2067,13 @@ services.openssh = {
   users.users = {
    jellyfin = {
      isNormalUser = true;
-     description = "SpiderUnderUrBed";
+     description = "jellyfin";
      extraGroups = [ "networkmanager" "wheel" ];	
+   };
+   guest = {
+     isNormalUser = true;
+     description = "guest";
+     extraGroups = [ "networkmanager" ];   
    };
    spiderunderurbed = {
     isNormalUser = true;
