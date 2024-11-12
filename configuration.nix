@@ -1000,6 +1000,10 @@ enable = false;
 	#waybar
 #	blueman-applet
 	#hyprland
+	jq
+	pasystray
+	copyq
+#	xclip
 	fortune
 	swayosd
 	kitty

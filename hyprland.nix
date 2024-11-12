@@ -10,6 +10,10 @@ let
       #  "[workspace special silent] foot -a quake"
         #"[workspace special; size 75% 20%;move 12.5% 40] kitty"
         (lib.getExe pkgs.waybar)
+ 	"${lib.getExe pkgs.copyq} --start-server"	
+#	${lib.getExe pkgs.copyq} --start-server
+	#(lib.getExe pkgs.copyq) --start-server
+	#(lib.getExe pkgs.blue
         "${pkgs.blueman}/bin/blueman-applet"
         "${pkgs.networkmanagerapplet}/bin/nm-applet"
         "${pkgs.pasystray}/bin/pasystray"
@@ -47,6 +51,8 @@ let
         #"SUPER+tab,h,layoutmsg,preselect d"
         #[workspace special; size 75% 20%;move 12.5% 40] kitty
         #"SUPER+alt,k,[workspace special; size 75% 20%;move 12.5% 40] kitty --class=kitty-dropdown"
+	"SUPER+alt,F1,killactive"
+	#"SUPER+alt,F1,exec,bash ~/home-manager/silenceactive.sh"
         "SUPER+shift,v,exec,code"
         "SUPER+shift,s,exex,steam"
         "SUPER+ESCAPE,s,exec,systemctl suspend"

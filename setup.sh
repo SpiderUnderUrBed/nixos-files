@@ -3,6 +3,7 @@ USER="spiderunderurbed"
 DIR="acer-predator-turbo-and-rgb-keyboard-linux-module"
 SOURCE_FOLDER="./spiderunderurbed"  # Folder to move items from
 HOME_DIR="home-manager"
+UUID=$(id -u spiderunderurbed)
 # Check if the directory exists
 if [ -d "$DIR" ]; then 
     echo "Directory '$DIR' already exists."
@@ -42,3 +43,7 @@ fi
 ln -s /home/$USER/$HOME_DIR /etc/nixos/$USER
 ln -s /etc/nixos/hyprland.conf /etc/nixos/$USER/hyprland.conf
 ln -s /etc/nixos/hyprland.nix /etc/nixos/$USER/hyprland.nix
+
+chown -R spiderunderurbed:users /etc/nixos/spiderunderurbed/
+#chmod $UUID /etc/nixos/spiderunderurbed/
+chmod 705 /etc/nixos/spiderunderurbed/*
