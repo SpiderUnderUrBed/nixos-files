@@ -2,7 +2,7 @@
 USER="spiderunderurbed"
 DIR="acer-predator-turbo-and-rgb-keyboard-linux-module"
 SOURCE_FOLDER="./spiderunderurbed"  # Folder to move items from
-
+HOME_DIR="home-manager"
 # Check if the directory exists
 if [ -d "$DIR" ]; then 
     echo "Directory '$DIR' already exists."
@@ -24,14 +24,21 @@ else
 fi
 
 # Check if the /home/$USER directory exists
-if [ -d "/home/$USER/home-manager" ]; then  
-    echo "/home/$USER/home-manager directory already exists."
-else 
-    echo "Directory '/home/$USER/home-manager' does not exist. Creating it..."
-    mkdir -p "/home/$USER/home-manager"
+if [ ! -d "/home/$USER/$HOME_DIR" ] || [ ! "$(ls -A /home/$USER/$HOME_DIR)" ]; then
+    echo "Directory '/home/$USER/$HOME_DIR' does not exist or is empty. Cloning and moving files..."
+    mkdir -p "/home/$USER/$HOME_DIR"
+    git clone https://github.com/SpiderUnderUrBed/home-manager.git /home/$USER/$HOME_DIR/home-manager
+    mv /home/$USER/$HOME_DIR/home-manager/* /home/$USER/$HOME_DIR/
+    rm -rf /home/$USER/$HOME_DIR/home-manager
+else
+    echo "/home/$USER/$HOME_DIR directory exists and is not empty. Skipping creation and cloning."
 fi
+
+#cd /etc/nixos
 
 #Download python extention
 #Download the sober flatpakref
-
-ln -s /etc/nixos/hyprland.conf /etc/nixos/spiderunderurbed/hyprland.conf
+#ln -s /home/nixos/spiderunderurbed/home-manager/ /etc/nixos/spiderunderurbed/
+ln -s /home/$USER/$HOME_DIR /etc/nixos/$USER
+ln -s /etc/nixos/hyprland.conf /etc/nixos/$USER/hyprland.conf
+ln -s /etc/nixos/hyprland.nix /etc/nixos/$USER/hyprland.nix

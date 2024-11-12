@@ -204,7 +204,12 @@ let
 #> /home/spiderunderurbed/python.log
    # '';
   #};
- acermodule = config.boot.kernelPackages.callPackage ./acer-module.nix {};
+# hyprlandConfig = { inherit (import ./hyprland.nix); };
+ #hyprlandConfig = ((import ./hyprland.nix).hyprlandConfig) // { enable = false; };
+  #hyprlandConfig = ((import ./hyprland.nix) {config, lib, pkgs}).hyprlandConfig // {enable = false;};
+  #hyprlandConfig = ((import ./hyprland.nix) { config = config; lib = lib; pkgs = pkgs; }).hyprlandConfig // { enable = false; };
+  hyprlandConfig = ((import ./hyprland.nix) { config = config; lib = lib; pkgs = pkgs; }) // { enable = false; };
+  acermodule = config.boot.kernelPackages.callPackage ./acer-module.nix {};
   coreutils = pkgs.writeShellApplication {
      name = "coreutils";
      runtimeInputs = [
@@ -653,7 +658,9 @@ extraConfig = "auth,authpriv.*                 /var/log/auth.log";
 mullvad-vpn = {
 enable = false;
 };
+
 #>>>>>>> cdcb124 (Initial commit)
+
 #protonmail-bridge = {
 #  enable = true;
 #  package =
@@ -671,6 +678,18 @@ enable = false;
 #};
 displayManager = {
    execCmd = lib.mkDefault "exec ${pkgs.sddm}/bin/sddm";
+   sessionPackages = [
+ 	pkgs.hyprland
+  ];
+  # sessionPackages = [
+  #  ((pkgs.writeTextDir "share/wayland-sessions/hyprland.desktop" ''
+  #	    [Desktop Entry]
+  #          Name=hyprland
+  #          Comment=A wayland window manager
+  #          Exec=hyprland
+  #  	    Type=Application
+  #  ''))
+  #  ];
 };
 
 usbguard = {
@@ -980,6 +999,8 @@ enable = false;
 	#yarn
 	#waybar
 #	blueman-applet
+	#hyprland
+	fortune
 	swayosd
 	kitty
 	pavucontrol
@@ -1804,39 +1825,47 @@ services.openssh = {
    thunar = {
      enable = true;
    };
-   hyprland = {
-     enable = true;
-     settings = {  
-     "$terminal" = "konsole";
-     "$dropterm"="kitty-dropdown";
-      "exec-once" = [
-      #  "[workspace special silent] foot -a quake"
-        #"[workspace special; size 75% 20%;move 12.5% 40] kitty"
-        (lib.getExe pkgs.waybar)
-        "${pkgs.blueman}/bin/blueman-applet"
-	"${pkgs.networkmanagerapplet}/bin/nm-applet"
-        #[workspace special; size 75% 20%;move 12.5% 40] kitty
-        "[workspace special; size 75% 20%;move 12.5% 40] kitty --class=kitty-dropdown"
-      ];
+  hyprland = (hyprlandConfig);
+  #hyprland = { inherit (hyprlandConfig); };
+  # hyprland = {
+  #   enable = true;
+  #   package = pkgs.hyprland;
+  #   settings = {  
+  #   "$terminal" = "konsole";
+  #   "$dropterm"="kitty-dropdown";
+  #    "exec-once" = [
+  #    #  "[workspace special silent] foot -a quake"
+  #      #"[workspace special; size 75% 20%;move 12.5% 40] kitty"
+  #      (lib.getExe pkgs.waybar)
+ #       "${pkgs.blueman}/bin/blueman-applet"
+#	"${pkgs.networkmanagerapplet}/bin/nm-applet"#
+#	"${pkgs.pasystray}/bin/pasystray"
+  #      #[workspace special; size 75% 20%;move 12.5% 40] kitty
+  #      "[workspace special; size 75% 20%;move 12.5% 40] kitty --class=kitty-dropdown"
+  #    ];
         #[workspace special; size 75% 20%;move 12.5% 40] kitty
       #"$dropterm"="kitty-dropdown"
-     "windowrule" = [
-        "workspace 1,$dropterm"
-        "float,$dropterm"
-        "size 75% 20%,$dropterm"
-        "move 12.5% -469,$dropterm"
-     ];
+  #   "windowrule" = [
+  #      "workspace 1,$dropterm"
+  #      "float,$dropterm"
+  #      "size 75% 20%,$dropterm"
+  #      "move 12.5% -469,$dropterm"
+  #   ];
  #    debug = { 
 #	suppress_errors = true;
    #  };
-     binde = [
-	", XF86AudioRaiseVolume, exec, swayosd --output-volume raise"
-	", XF86AudioLowerVolume, exec, exec  swayosd --output-volume lower"
-     ];
-     bindle = [
-	",XF86AudioMute, exec, swayosd --output-volume mute-toggle"
-     ];
-     bind = [
+    #bindsym XF86MonBrightnessUp exec swayosd-client --brightness raise
+    #bindsym XF86MonBrightnessUp exec swayosd-client --brightness lower
+ #    binde = [
+#	", XF86MonBrightnessUp, exec, swayosd-client --brightness lower"
+#	", XF86MonBrightnessUp, exec, swayosd-client --brightness raise"
+#	", XF86AudioRaiseVolume, exec, swayosd-client --output-volume raise"
+#	", XF86AudioLowerVolume, exec, swayosd-client --output-volume lower"
+  #   ];
+ #    bindle = [#
+#	",XF86AudioMute, exec, swayosd --output-volume mute-toggle"
+#     ];
+#     bind = [
 #Super+C = kill window
         #"SUPER+SHIFT+LEFT,movewindow,mon:eDP-1"
         #"SUPER+SHIFT+RIGHT,movewindow,mon:HDMI-A-1"
@@ -1845,24 +1874,24 @@ services.openssh = {
         #"SUPER+tab,h,layoutmsg,preselect d"
         #[workspace special; size 75% 20%;move 12.5% 40] kitty
         #"SUPER+alt,k,[workspace special; size 75% 20%;move 12.5% 40] kitty --class=kitty-dropdown"
-	"SUPER+shift,v,exec,code"
-	"SUPER+shift,s,exex,steam"
-	"SUPER+ESCAPE,s,exec,systemctl suspend"
-	"SUPER+alt,k,exec,konsole"
-        "SUPER+alt,s,exec,hyprshot -m region --freeze"
-        "SUPER,grave,exec,bash ~/home-manager/quake.sh"
-        "SUPER+alt,m,exec,flatpak run im.fluffychat.Fluffychat"
-        "SUPER+alt,right,movewindow,mon:r"
-        "SUPER+alt,left,movewindow,mon:l"
-        "SUPER+alt,V,exec,flatpak run dev.vencord.Vesktop"
-        "SUPER,K,exec,hyprctl kill"
-        "SUPER,L,exec,librewolf"
-        "SUPER+F,1,fullscreen"
-        "SUPER,F,fullscreen,1"  
-     ];
-     extraConfig = (builtins.readFile /etc/nixos/hyprland.conf);
-     };
-   }; 
+#	"SUPER+shift,v,exec,code"
+#	"SUPER+shift,s,exex,steam"
+#	"SUPER+ESCAPE,s,exec,systemctl suspend"#
+#	"SUPER+alt,k,exec,konsole"
+  #      "SUPER+alt,s,exec,hyprshot -m region --freeze"
+  #      "SUPER,grave,exec,bash ~/home-manager/quake.sh"
+  #      "SUPER+alt,m,exec,flatpak run im.fluffychat.Fluffychat"
+  #      "SUPER+alt,right,movewindow,mon:r"
+  #      "SUPER+alt,left,movewindow,mon:l"
+  #      "SUPER+alt,V,exec,flatpak run dev.vencord.Vesktop"
+  #      "SUPER,K,exec,hyprctl kill"
+  #      "SUPER,L,exec,librewolf"
+  #      "SUPER+F,1,fullscreen"
+  #      "SUPER,F,fullscreen,1"  
+  #   ];
+  #   extraConfig = (builtins.readFile /etc/nixos/hyprland.conf);
+  #   };
+  # }; 
   chromium = {
         enable = true;
    #     package = pkgs.brave;
@@ -2043,10 +2072,13 @@ services.openssh = {
 	#./vfio.nix
 #	./lanzaboote.nix
 #	./protonmail-bridge.nix
+
+#	./hyprland.nix
 	./hyprland/nixos-module.nix
 	aagl.module
       #./sops-nix/modules/sops
         ./hardware-configuration.nix
+
 #	./waydroid-config.nix
 #	(import "${this.home-manager}/nixos")
 #      ./de.nix	
