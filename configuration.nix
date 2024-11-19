@@ -208,7 +208,7 @@ let
  #hyprlandConfig = ((import ./hyprland.nix).hyprlandConfig) // { enable = false; };
   #hyprlandConfig = ((import ./hyprland.nix) {config, lib, pkgs}).hyprlandConfig // {enable = false;};
   #hyprlandConfig = ((import ./hyprland.nix) { config = config; lib = lib; pkgs = pkgs; }).hyprlandConfig // { enable = false; };
-  hyprlandConfig = ((import ./hyprland.nix) { config = config; lib = lib; pkgs = pkgs; }) // { enable = false; };
+  hyprlandConfig = ((import ./hyprland.nix) { lib = lib; pkgs = pkgs; }) // { enable = false; };
   acermodule = config.boot.kernelPackages.callPackage ./acer-module.nix {};
   coreutils = pkgs.writeShellApplication {
      name = "coreutils";
@@ -333,10 +333,13 @@ arion = pkgs.writeShellApplication {
 in 
 #}
 {
+nixpkgs.config.allowUnsupportedSystem = true;
 nixpkgs.overlays = [
 pinnedKde
 #(import /etc/nixos/waydroid-overlay.nix { inherit pkgs lib config; })
 ];
+
+aagl.enableNixpkgsReleaseBranchCheck = false;
 
 # nixpkgs.config.packageOverrides = pkgs: {
 #    nur = import (builtins.fetchTarball "https://github.com/nix-community/NUR/archive/master.tar.gz") {
@@ -399,7 +402,19 @@ pinnedKde
 #  '';
 
   #igpuWithPipe = builtins.readFile myPipe;
-systemd.services = {
+systemd = {
+user.services = {
+"pasystray-ensure" = {
+    description = "PulseAudio Tray Application (pasystray)";
+ #   after = [ "graphical.target" ];
+    serviceConfig = {
+      ExecStart = "${pkgs.bash}/bin/bash -c 'if ! ${pkgs.procps}/bin/pgrep pasystray > /dev/null; then ${pkgs.pasystray}/bin/pasystray --display=:0; fi'";
+      Restart = "always";
+    };
+ #   wantedBy = [ "default.target" ];
+};
+};
+services = {
 #<<<<<<< HEAD
 #waydroid-container.wantedBy = lib.mkForce [];
 #"app-org.kde.xwaylandvideobridge@autostart.service".wantedBy = lib.mkForce [];
@@ -462,7 +477,7 @@ systemd.services = {
 #  wantedBy = [ "multi-user.target" ];
 #};
 };
-
+};
 /* systemd.services."pdns.service.d".after = ["mysql.service"];
 systemd.services.pebble = {
     description = "Pebble ACME Test Server";
@@ -992,7 +1007,9 @@ enable = false;
  #  "${pkgs.jellyfin-ffmpeg.src} /home/jellyfin/jellyfin-ffmpeg"
  # ];
   #environment.etc."jellyfin-ffmpeg" = "${pkgs.jellyfin-ffmpeg.src}";
-  environment.systemPackages = with pkgs; [
+  environment.systemPackages = with pkgs; 
+  [] ++
+  [
 	#sswg.swift-lang
 	#fabric-ai
 	#chatgpt-shell-cli
@@ -1000,6 +1017,17 @@ enable = false;
 	#waybar
 #	blueman-applet
 	#hyprland
+	#pipx
+#	"python3.12-pip-24.0"
+	overskride
+	hyprland
+	anki
+	pyenv
+	cryfs
+	sherlock
+	shell-gpt
+	feh
+	bc
 	jq
 	pasystray
 	copyq
@@ -1050,7 +1078,7 @@ enable = false;
 	audacity
 	bottles
 	#libglvnd
-	onedrivegui
+#	onedrivegui
 	vlc
 	virt-manager
 	bleachbit
@@ -1826,6 +1854,14 @@ services.openssh = {
       "jdks/8".source = "${pkgs.openjdk8}/bin";
   };
   programs = {
+  uwsm = {
+    enable = true;
+    waylandCompositors.hyprland = {
+      binPath = "/run/current-system/sw/bin/Hyprland";
+      comment = "Hyprland session managed by uwsm";
+      prettyName = "Hyprland";
+    };
+  };
    thunar = {
      enable = true;
    };
@@ -1918,6 +1954,9 @@ services.openssh = {
 	enable = true;
 	package = pkgs.librewolf;
 	#nativeMessagingHosts.packages = [ pkgs.plasma-browser-integration ];
+	preferences = {
+	  "browser.tabs.groups.enabled" = true;
+	};
 	policies.ExtensionSettings = {
                "uBlock0@raymondhill.net" = {
                     install_url = "https://addons.mozilla.org/firefox/downloads/latest/ublock-origin/latest.xpi";

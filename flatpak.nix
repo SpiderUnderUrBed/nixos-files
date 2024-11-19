@@ -58,6 +58,13 @@ in
 	#{ appId = "moe.launcher.an-anime-game-launcher"; origin = "gol"; }
 #>>>>>>> cdcb124 (Initial commit)
 #	"org.emilien.Password"
+	#"com.bktus.gpgfrontend"
+	#"net.ankiweb.Anki"
+	"chat.simplex.simplex"
+	"net.minetest.Minetest"
+	"io.github.mpobaschnig.Vaults"
+#	"io.github.david_swift.Flashcards"
+	#"com.github.phase1geo.minder"
 	"io.gitlab.librewolf-community"
 	"dev.vencord.Vesktop"
 	"com.rafaelmardojai.Blanket"
@@ -69,9 +76,10 @@ in
 #	"org.gnome.Chess"
 	"com.opera.Opera"
 #c	"org.gnome.Calendar"
-	"org.nickvision.tubeconverter"
+#	"org.nickvision.tubeconverter"
 	#"org.freedesktop.Platform.VulkanLayer.MangoHud"
-	"io.kapsa.drive"
+#	"io.kapsa.drive"
+#	S3 ^
 	"com.rawtherapee.RawTherapee"
 	"org.eclipse.Java"
 	"org.rncbc.qpwgraph"

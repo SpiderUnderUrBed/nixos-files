@@ -43,8 +43,8 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 #    nix-flatpak.url = "github:gmodena/nix-flatpak";
-    nix-flatpak.url = "github:gmodena/nix-flatpak/fix-flatpakref-install";
-   # nix-flatpak.url = "github:gmodena/nix-flatpak/nix-flatpakref-install?rev=e637f51f6523c8fad28af79ea6b1f64697fa9945";
+    nix-flatpak.url = "github:gmodena/nix-flatpak";
+#    nix-flatpak.url = "github:gmodena/nix-flatpak?rev=b4613e797b1306311a675782d886475f8d18bf68";
  };
 
   outputs = { 
