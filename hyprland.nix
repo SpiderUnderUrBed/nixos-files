@@ -17,8 +17,8 @@ let
         "${pkgs.blueman}/bin/blueman-applet"
         "${pkgs.networkmanagerapplet}/bin/nm-applet"
 #	(lib.getExe pkgs.hyprpaper)
-	"systemctl start xwayland-detach --user"
-	"systemctl start pasystray-ensure --user"
+#	"systemctl start xwayland-ensure --user"
+#	"systemctl start pasystray-ensure --user"
 	(lib.getExe pkgs.pasystray)
 #        "${pkgs.pasystray}/bin/pasystray"
         #[workspace special; size 75% 20%;move 12.5% 40] kitty

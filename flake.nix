@@ -118,12 +118,12 @@
           environment.systemPackages = with pkgs; [
             envycontrol.packages.${system}.default
           ];
-          boot.loader.systemd-boot.enable = pkgs.lib.mkForce false;
-          boot.lanzaboote = {
-	    #enable = false;
-            enable = true;
-            pkiBundle = "/etc/secureboot";
-          };
+  #        #boot.loader.systemd-boot.enable = pkgs.lib.mkForce false;
+ #         boot.lanzaboote = {
+#	    enable = false;
+ #           #enable = true;
+ #           pkiBundle = "/etc/secureboot";
+#          };
         }
       ];
     };

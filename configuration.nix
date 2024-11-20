@@ -68,19 +68,22 @@ systemd = {
 user.services = {
 "xwayland-ensure" = {
   description = "Backup xwaylandserver";
-
-  enable = true;
-
+  wantedBy = ["graphical-session.target"];
+  #enable = true;
+  requisite = ["graphical-session.target"];
+  after = ["graphical-session.target"];
+  partOf = ["graphical-session.target"];
+  bindsTo = ["graphical-session.target"];
   serviceConfig = {
-      ExecStart = "${pkgs.bash}/bin/bash -c 'if ! ${pkgs.procps}/bin/pgrep X > /dev/null; then ${pkgs.xwayland-satellite}/bin/xwayland-satellite; fi'";
+      ExecStart = "${pkgs.bash}/bin/bash -c 'if ! ${pkgs.procps}/bin/pgrep X > /dev/null; then ${pkgs.xwayland-satellite}/bin/xwayland-satellite :0; fi'";
       Restart = "always";
   };
 };
 "pasystray-ensure" = {
     description = "PulseAudio Tray Application (pasystray)";
-
-    enable = true;
-
+    wantedBy = ["xwayland-ensure.service"];
+#    enable = true;
+    after = ["xwayland-ensure.service"];
     serviceConfig = {
       ExecStart = "${pkgs.bash}/bin/bash -c 'if ! ${pkgs.procps}/bin/pgrep pasystray > /dev/null; then ${pkgs.pasystray}/bin/pasystray --display=:0; fi'";
       Restart = "always";
@@ -244,9 +247,8 @@ expressvpn.enable = true;
  ] ++
   [
 	sbctl
-
+	efibootmgr
 	anki
-
 	cryfs
 	sherlock
 	shell-gpt
