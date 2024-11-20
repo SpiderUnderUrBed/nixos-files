@@ -2186,7 +2186,7 @@ services.openssh = {
  # };
   boot.loader = {
   systemd-boot = { #
-      enable = false;
+      enable = true;
       configurationLimit = 10;
   };
   efi = {
@@ -2194,6 +2194,7 @@ services.openssh = {
     efiSysMountPoint = "/boot/efi"; # ← use the same mount point here.
   };
   grub = {
+     enable = false;
      efiSupport = true;
      configurationLimit = 10;
      #efiInstallAsRemovable = true; # in case canTouchEfiVariables doesn't work for your system
