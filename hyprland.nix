@@ -17,6 +17,7 @@ let
         "${pkgs.blueman}/bin/blueman-applet"
         "${pkgs.networkmanagerapplet}/bin/nm-applet"
 #	(lib.getExe pkgs.hyprpaper)
+	"systemctl start xwayland-detach --user"
 	"systemctl start pasystray-ensure --user"
 	(lib.getExe pkgs.pasystray)
 #        "${pkgs.pasystray}/bin/pasystray"

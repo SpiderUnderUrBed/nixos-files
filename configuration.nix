@@ -404,9 +404,22 @@ aagl.enableNixpkgsReleaseBranchCheck = false;
   #igpuWithPipe = builtins.readFile myPipe;
 systemd = {
 user.services = {
+"xwayland-ensure" = {
+  description = "Backup xwaylandserver";
+ # wantedBy = ["default.target"];
+  enable = true;
+ # linger = true;
+  serviceConfig = {
+      ExecStart = "${pkgs.bash}/bin/bash -c 'if ! ${pkgs.procps}/bin/pgrep X > /dev/null; then ${pkgs.xwayland-satellite}/bin/xwayland-satellite; fi'";
+      Restart = "always";
+  };
+};
 "pasystray-ensure" = {
     description = "PulseAudio Tray Application (pasystray)";
  #   after = [ "graphical.target" ];
+ #   wantedBy = ["default.target"];
+    enable = true;
+  #  linger = true;
     serviceConfig = {
       ExecStart = "${pkgs.bash}/bin/bash -c 'if ! ${pkgs.procps}/bin/pgrep pasystray > /dev/null; then ${pkgs.pasystray}/bin/pasystray --display=:0; fi'";
       Restart = "always";
@@ -1008,8 +1021,27 @@ enable = false;
  # ];
   #environment.etc."jellyfin-ffmpeg" = "${pkgs.jellyfin-ffmpeg.src}";
   environment.systemPackages = with pkgs; 
-  [] ++
   [
+    overskride
+    hyprland
+    copyq
+    pasystray
+    swayosd
+    pavucontrol
+    kitty
+  ] ++
+  [
+    pyenv
+    bc
+    jq
+    blueman
+    fortune 
+    pavucontrol
+    xwayland
+    xwayland-satellite
+ ] ++
+  [
+	sbctl
 	#sswg.swift-lang
 	#fabric-ai
 	#chatgpt-shell-cli
@@ -1019,25 +1051,25 @@ enable = false;
 	#hyprland
 	#pipx
 #	"python3.12-pip-24.0"
-	overskride
-	hyprland
+	#overskride
+	#hyprland
 	anki
-	pyenv
+#	pyenv
 	cryfs
 	sherlock
 	shell-gpt
 	feh
-	bc
-	jq
-	pasystray
-	copyq
+#	bc
+#	jq
+	#pasystray
+#	copyq
 #	xclip
-	fortune
-	swayosd
-	kitty
-	pavucontrol
+#	fortune
+#	swayosd
+#	kitty
+#	pavucontrol
 	#nwg-panel
-	blueman 
+#	blueman 
 	yt-dlp
 	gh
 	avml
@@ -1936,6 +1968,7 @@ services.openssh = {
         enable = true;
    #     package = pkgs.brave;
         extensions = [
+	   "enamippconapkdmgfgjchkhakpfinmaj" #dearrow
            "cjpalhdlnbpafiamejdnhcphjbkeiagm" #ublock
            "nngceckbapebfimnlniiiahkandclblb" #bitwarden
            "mnjggcdmjocbbbhaepdhchncahnbgone" #sponsorblock
@@ -2350,6 +2383,7 @@ services.openssh = {
    spiderunderurbed = {
     isNormalUser = true;
     description = "SpiderUnderUrBed";
+    linger = true;
     extraGroups = [ 
 	"libvirtd"
 	"networkmanager"
