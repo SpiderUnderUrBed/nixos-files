@@ -3,6 +3,7 @@ let
    hyprlandConfig = {
 #     enable = true;
 #     package = pkgs.hyprland;
+     systemd.enable = false;
      settings = {  
      "$terminal" = "konsole";
      "$dropterm"="kitty-dropdown";
@@ -10,6 +11,7 @@ let
       #  "[workspace special silent] foot -a quake"
         #"[workspace special; size 75% 20%;move 12.5% 40] kitty"
         (lib.getExe pkgs.waybar)
+	"${pkgs.walker}/bin/walker --gapplication-service"
  	"${lib.getExe pkgs.copyq} --start-server"	
 #	${lib.getExe pkgs.copyq} --start-server
 	#(lib.getExe pkgs.copyq) --start-server
@@ -70,8 +72,10 @@ let
 	"alt,F4,killactive"
 	"SUPER+alt,p,exec,pavucontrol"
 	#SUPER,a,exec,sh -c '[ -x "$(command -v rofi)" ] && rofi -show drun || wofi --show drun'
-	"SUPER+alt,b,exec,overskride"
-	"SUPER,a,exec,wofi --show drun"
+	"SUPER+alt,b,exec,blueman-manager"
+#	"SUPER+alt,b,exec,overskride"
+	"SUPER,a,exec,walker"
+#	"SUPER,a,exec,wofi --show drun"
 	#"SUPER,a,exec,rofi -show drun"
 	"SUPER+alt,q,exec,flatpak run org.qbittorrent.qBittorrent"
 	"SUPER+shift,m,exec,mpv --player-operation-mode=pseudo-gui"

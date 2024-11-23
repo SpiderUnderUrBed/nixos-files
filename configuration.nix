@@ -3,7 +3,7 @@
 
 let 
 
-  hyprlandConfig = ((import ./hyprland.nix) { lib = lib; pkgs = pkgs; }) // { enable = false; };
+  #hyprlandConfig = ((import ./hyprland.nix) { lib = lib; pkgs = pkgs; }) // { enable = false; };
   acermodule = config.boot.kernelPackages.callPackage ./acer-module.nix {};
   coreutils = pkgs.writeShellApplication {
      name = "coreutils";
@@ -88,7 +88,6 @@ user.services = {
       ExecStart = "${pkgs.bash}/bin/bash -c 'if ! ${pkgs.procps}/bin/pgrep pasystray > /dev/null; then ${pkgs.pasystray}/bin/pasystray --display=:0; fi'";
       Restart = "always";
     };
-
 };
 };
 services = {
@@ -227,7 +226,7 @@ expressvpn.enable = true;
 
   environment.systemPackages = with pkgs; 
   [
-    overskride
+   # overskride
     hyprland
     copyq
     pasystray
@@ -246,6 +245,11 @@ expressvpn.enable = true;
     xwayland-satellite
  ] ++
   [
+	alsa-lib
+	pkg-config
+ 	openssl
+	ollama
+	rustup
 	sbctl
 	efibootmgr
 	anki
@@ -461,7 +465,7 @@ hardware.enableAllFirmware = true;
 
   hardware.nvidia = {
 
-    package = config.boot.kernelPackages.nvidiaPackages.beta;
+    package = config.boot.kernelPackages.nvidiaPackages.latest;
     modesetting.enable = true;
     open = false;
     nvidiaSettings = true;
@@ -606,7 +610,7 @@ services.openssh = {
    thunar = {
      enable = true;
    };
-  hyprland = (hyprlandConfig);
+  #hyprland = (hyprlandConfig);
 
   chromium = {
         enable = true;
@@ -833,7 +837,8 @@ services.openssh = {
    spiderunderurbed = {
     isNormalUser = true;
     description = "SpiderUnderUrBed";
-    linger = true;
+    #linger = true;
+    openssh.authorizedKeys.keys = [];
     extraGroups = [ 
 	"libvirtd"
 	"networkmanager"
