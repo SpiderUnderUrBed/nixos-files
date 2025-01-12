@@ -17,7 +17,7 @@
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.11";
     auto-cpufreq = {
       url = "github:AdnanHodzic/auto-cpufreq";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -67,6 +67,7 @@
     system = "x86_64-linux";
     pkgs = nixpkgs.legacyPackages.${system};
     lib = nixpkgs.lib;
+#    flakeDir = "/etc/nixos";
   in
   {
     nixosConfigurations.daspidercave = nixpkgs.lib.nixosSystem {
@@ -87,6 +88,7 @@
  #     imports = [
 #	(import ./flatpak.nix { inherit inputs })
 #      ];
+      specialArgs = { inherit inputs; };
       modules = [
         lanzaboote.nixosModules.lanzaboote
         auto-cpufreq.nixosModules.default
@@ -94,7 +96,10 @@
         ./configuration.nix
 	./boot.nix
 	#./flatpak.nix
-	(import ./flatpak.nix { inherit lib pkgs inputs; }) 
+	./registry.nix
+	./flatpak.nix
+	#(import ./flatpak.nix { inherit lib pkgs inputs; }) 
+#	(import ./registry.nix { inherit lib pkgs inputs config; })
 #		extraSpecialArgs = {
 #			inherit inputs;
 #		}
@@ -115,6 +120,7 @@
 	}
 #>>>>>>> cdcb124 (Initial commit)
         {
+	  #environment.etc."flake.lock".source = "${flakeDir}/flake.lock";
           environment.systemPackages = with pkgs; [
             envycontrol.packages.${system}.default
           ];

@@ -35,7 +35,7 @@
 #=======
 	# 
 #0095faf2-2359-4515-a1e1-af7ef6f11a0f
-      device = "/dev/disk/by-uuid/0095faf2-2359-4515-a1e1-af7ef6f11a0f";
+      #device = "/dev/disk/by-uuid/0095faf2-2359-4515-a1e1-af7ef6f11a0f";
 #>>>>>>> cdcb124 (Initial commit)
       fsType = "btrfs";
       options = [ "subvol=@" "compress=zstd" ];
@@ -45,13 +45,14 @@
   #boot.initrd.luks.devices."luks-dd28e1bb-dae0-4794-b8ae-8d52b8bd9189".device = "/dev/disk/by-uuid/dd28e1bb-dae0-4794-b8ae-8d52b8bd9189";
 
   fileSystems."/boot" =
-    { device = "/dev/disk/by-uuid/C751-21FD";
+    { 
+      #device = "/dev/disk/by-uuid/C751-21FD";
       fsType = "vfat";
-      label = "boot";
+      label = "BOOT";
     };
 
   fileSystems."/home" =
-    { device = "/dev/disk/by-uuid/686107ef-b8a2-4301-9350-f69b9de9b81e";
+    { #device = "/dev/disk/by-uuid/686107ef-b8a2-4301-9350-f69b9de9b81e";
       fsType = "btrfs";
       options = [ "compress=zstd" ];
       label = "home";

@@ -1,9 +1,14 @@
-{ gitCredentialManager ? {}, options ? {}, specialArgs ? {}, modulesPath ? {}, lib, pkgs }:
+{ gitCredentialManager ? {}, options ? {}, specialArgs ? {}, modulesPath ? {}, lib, pkgs, inputs }:
 let
    hyprlandConfig = {
 #     enable = true;
-#     package = pkgs.hyprland;
+     package = inputs.hyprland.packages.${pkgs.system}.hyprland;
+     #package = inputs.hyprland.pkgs.hyprland;
      systemd.enable = false;
+     plugins = [
+#	inputs.hyprland-plugins.packages.${pkgs.system}.hyprexpo
+#	inputs.hyprspace.packages.${pkgs.system}.Hyprspace
+     ];
      settings = {  
      "$terminal" = "konsole";
      "$dropterm"="kitty-dropdown";
@@ -83,7 +88,7 @@ let
 	"SUPER+alt,f,exec,thunar"
 	#"SUPER+alt,F1,exec,bash ~/home-manager/silenceactive.sh"
 	"SUPER,b,exec,brave"
-        "SUPER+shift,v,exec,code"
+        "SUPER+alt,c,exec,code"
         "SUPER+shift,s,exec,steam"
         "SUPER+ESCAPE,s,exec,systemctl suspend"
         "SUPER+alt,k,exec,konsole"

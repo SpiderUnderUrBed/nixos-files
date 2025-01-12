@@ -1,9 +1,8 @@
-
 { config, pkgs, inputs, lib, ... }:
 
 let 
-
-  #hyprlandConfig = ((import ./hyprland.nix) { lib = lib; pkgs = pkgs; }) // { enable = false; };
+  homeInputs = (builtins.getFlake ./spiderunderurbed/flake.nix).inputs; 
+  #hyprlandConfig = ((import ./hyprland.nix) { lib = lib; pkgs = pkgs; inputs = homeInputs; }) // { enable = false; };
   acermodule = config.boot.kernelPackages.callPackage ./acer-module.nix {};
   coreutils = pkgs.writeShellApplication {
      name = "coreutils";
@@ -64,14 +63,23 @@ pinnedKde
 
 aagl.enableNixpkgsReleaseBranchCheck = false;
 
-systemd = {
-user.services = {
+systemd.user.services = {
+#"dunst" = {
+#description = "Dunst notification daemon";
+#after = [ "wayland-wm@Hyprland.service" ];
+#partOf = [ "graphical-session.target" ];
+
+#};
 "xwayland-ensure" = {
   description = "Backup xwaylandserver";
-  wantedBy = ["graphical-session.target"];
-  #enable = true;
+  wantedBy = ["wayland-wm@Hyprland.service"];
+  #plasma-plasmashell.service
+  #wantedBy = ["wayland-wm@hyprland\x2duwsm.desktop.service"];
+  #wantedBy = ["graphical-session.target"];
+  enable = true;
   requisite = ["graphical-session.target"];
   after = ["graphical-session.target"];
+ # after = ["wayland-wm@hyprland\x2duwsm.desktop.service"];
   partOf = ["graphical-session.target"];
   bindsTo = ["graphical-session.target"];
   serviceConfig = {
@@ -89,52 +97,16 @@ user.services = {
       Restart = "always";
     };
 };
+#"hyprpaper-ensure"
 };
 services = {
 
 };
-};
+#};
 
 security.sudo.enable = true;
 
 security.pki.certificates = [ ''
-
------BEGIN CERTIFICATE-----
-MIIGPzCCBCegAwIBAgIUeINQ75LPcCLI7cKU1U8S9SyIIb0wDQYJKoZIhvcNAQEL
-BQAwgZsxCzAJBgNVBAYTAk5aMRMwEQYDVQQIDApTb21lLVN0YXRlMRMwEQYDVQQH
-DApXZWxsaW5ndG9uMSEwHwYDVQQKDBhJbnRlcm5ldCBXaWRnaXRzIFB0eSBMdGQx
-FDASBgNVBAMMC3NwaWRlcnNjYXZlMSkwJwYJKoZIhvcNAQkBFhpTcGlkZXJVbmRl
-clVyQmVkQHByb3Rvbi5tZTAeFw0yNDAxMjMwMTI4MzJaFw0yNTAxMjIwMTI4MzJa
-MIGbMQswCQYDVQQGEwJOWjETMBEGA1UECAwKU29tZS1TdGF0ZTETMBEGA1UEBwwK
-V2VsbGluZ3RvbjEhMB8GA1UECgwYSW50ZXJuZXQgV2lkZ2l0cyBQdHkgTHRkMRQw
-EgYDVQQDDAtzcGlkZXJzY2F2ZTEpMCcGCSqGSIb3DQEJARYaU3BpZGVyVW5kZXJV
-ckJlZEBwcm90b24ubWUwggIiMA0GCSqGSIb3DQEBAQUAA4ICDwAwggIKAoICAQC+
-zY/0WQ//hiPOv7NpY4YAB0cBqajg9YKh/s5C63TDaU9yjKrGJTSDPj0lvs+ofP+1
-I14rsJvdiDP3JKQJ6efEUkDJgQZrKLF9HFDB3WahdgCRyq48CMPuTZG9T1I8s5Bs
-kPAGHI8E5heszWh8yqpqmTfK4U+7Y9p3ej9kiQURmx5fUH4sF+tdBSax6vqp2aVT
-62x0dNCUhRJ9QRVPYWOZ/d7K4MSFlrR29TmncoZ0XJz2z0Ve7AwFkVeRGABeK6K4
-SfpWcENbzri8gL4rcEZgHOOTK0X4vL4gToRkk5lcIjnkj/m1UY1ZmG5BhwXTYm6B
-jlpxahByCQZgi9tpuYwZeC+6eNSC2hyr8shqEYqBcSOoNglWlCID0A24Ve7KwCth
-1SHPTPhcVZRgQ1JrTjYHes1STAJiCi5TJXGze5wDg7muADo2gkfr1o6WeNaIu8c2
-b5/t39KoISoM7CGQEyEVD8Mv5lZCrmc+o+HFVVcItmLvORz5+DDQBWmJv/94LMxA
-hnY8c3giokFIb+71KVaPEwETujqCKR+n8+c876Qc532lTKnaVR0bWJdcl472NQMk
-VzedjY/PKjJxE5VAxub0uvOug4nDeMeGhtzk2FKcUe997qNk/3urUwkSvK8CXA2Z
-Pyn9lDoIfSL6dy4P7PWQ5eQjiFUC4FI4aJWO48T34QIDAQABo3kwdzAdBgNVHQ4E
-FgQUsErcaMns2Yegkxn+dunfLtqPIHUwHwYDVR0jBBgwFoAUsErcaMns2Yegkxn+
-dunfLtqPIHUwDwYDVR0TAQH/BAUwAwEB/zAkBgNVHREEHTAbgghkZW1vLmNvbYIJ
-bG9jYWxob3N0hwR/AAABMA0GCSqGSIb3DQEBCwUAA4ICAQC2y5ublo3Yi814beLE
-Pe9pUVfyQJPzs5KKPjQM0yX+aL+gMUO9WdHZad+Qnyi6jCjb17O5L81650gt0Tb3
-ZGm43CqbRvmUmJXrvJ0kPit4EW1XXGshgx4ht6nCJMzuCuDvwn0dqXycm4QSGwrW
-PItlLaul4Ev/wnYUy+FCLS4iKm4+UQhUkdYf+kXbEYkYYFeGCaJ665OVRkBPqcSR
-fD5BRROGnI56qyVLsuDcfGU5e6r2y3N1+bQNpokFUvyhJGcTol+0Bw9HC0nY4z28
-ebu11AfvMSFCwm8FnuvFkzsi7rqcc4HZNJK4YX3yYrzXFAVFTzp1YUZ30BOqGcX4
-2SJkgzJD/oLToXu4dL9mBcDZTTVp6vpHJb29634eIg6vZPL3m0ArsBRKRW3ubznI
-GHredzIW5VGJsFEHIszfemGqaM9McSAzPcJKpm51CtjJ0KRcnUO8vaFYuuxMpGEy
-lxxcvWBAjeNJ3fvBMIoagrgxbJastRcaNaNG+HV0UvXueIp3HtZ5zP5nc1Vc8+Rh
-P+fPL1Z4EQJi6HqKWNlXBDiKThzuqx9PbwrPvslGz+Eo+nIXmOGyLaj0qvJNKYBs
-MfgyO7oEXySSP4smoUn5isKWg3B5z6nQ7ReXzq/XkZoFhXq3gOGiSILOwI/adra7
-hCncJu0OBrcLizP9UYJmH+7iVg==
------END CERTIFICATE-----
 '' ];
 networking = { 
 
@@ -222,7 +194,7 @@ expressvpn.enable = true;
 
 };
 
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+ # nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
   environment.systemPackages = with pkgs; 
   [
@@ -235,7 +207,7 @@ expressvpn.enable = true;
     kitty
   ] ++
   [
-    pyenv
+    #pyenv
     bc
     jq
     blueman
@@ -245,11 +217,19 @@ expressvpn.enable = true;
     xwayland-satellite
  ] ++
   [
+#	lf
+	pyenv
+	appimage-run
+	rmtrash
+	waypipe
+	tree
+	php
 	alsa-lib
 	pkg-config
  	openssl
 	ollama
 	rustup
+	tldr
 	sbctl
 	efibootmgr
 	anki
@@ -270,14 +250,14 @@ expressvpn.enable = true;
 	google-chrome
 	home-manager
 	swift
-	xclicker
+#	xclicker
 	lutris-free
 	android-studio
 	legendary-gl
 	wine
 	nmap
 
-	heroic
+#	heroic
 	gcc
 	sl
 	cmatrix
@@ -293,7 +273,7 @@ expressvpn.enable = true;
 	ettercap
 
 	audacity
-	bottles
+#	bottles
 
 	vlc
 	virt-manager
@@ -433,7 +413,7 @@ expressvpn.enable = true;
 	age
 	hyprshot
 
-	nix-software-center
+#	nix-software-center
 	nodejs
 
 	arion
@@ -461,11 +441,11 @@ hardware.bluetooth.powerOnBoot = true;
 hardware.enableAllFirmware = true;
 
   nixpkgs.config.nvidia.acceptLicense = true;
-  services.xserver.videoDrivers = ["nvidia" "intel"];
+  services.xserver.videoDrivers = ["nvidia" "modesetting"];
 
   hardware.nvidia = {
 
-    package = config.boot.kernelPackages.nvidiaPackages.latest;
+    package = config.boot.kernelPackages.nvidiaPackages.beta;
     modesetting.enable = true;
     open = false;
     nvidiaSettings = true;
@@ -490,12 +470,26 @@ hardware.enableAllFirmware = true;
     };
   };
 
+  environment.sessionVariables = {
+#	"NIX_CONF_DIR" = "/etc/nixos/nix/";
+  };
+#ix.settings.experimental-features = [ "nix-command" "flakes" ];
+  
+  nix = {
+	settings = {
+		auto-optimise-store = true;
+		experimental-features = [ "nix-command" "flakes" ];
+	};
+	extraOptions = ''
+	  download-buffer-size = 67108864	
+	'';
+  };
   specialisation = {
 
     GDM.configuration = {
    services = {
     displayManager = {
-	execCmd = lib.mkForce "exec ${pkgs.gnome.gdm}/bin/gdm";
+	execCmd = lib.mkForce "exec ${pkgs.gdm}/bin/gdm";
      };
      xserver = {
 	displayManager = {
@@ -558,7 +552,7 @@ services.openssh.ports = [3060];
 services.udev.packages = [ pkgs.yubikey-personalization pkgs.libu2f-host ];
 
   boot.kernelPackages = 
-
+#	pkgs.linuxPackages_latest;
 	pkgs.linuxPackages_zen;
 
   boot.extraModulePackages = 
@@ -567,8 +561,12 @@ services.udev.packages = [ pkgs.yubikey-personalization pkgs.libu2f-host ];
 	acermodule  
 	config.boot.kernelPackages.v4l2loopback.out
     ];
-
-  boot.kernelModules = [
+  boot.tmp = {
+	cleanOnBoot = true; 
+  	useTmpfs = true;
+	tmpfsSize = "100%";
+  };
+   boot.kernelModules = [
 
     "facer" "wmi" "sparse-keymap" "video" 
 
@@ -625,7 +623,7 @@ services.openssh = {
 	   "cimiefiiaegbelhefglklhhakcgmhkai" 
 	   "ghbmnnjooekpmoecnnnilnnbdlolhkhi" 
 	   "kaacflffkmlaiebklgemhmlfbhificko" 
-
+	   "cbghhgpcnddeihccjmnadmkaejncjndb"
 	   "kbfnbcaeplbcioakkpcpgfkobkghlhen" 
 
        ];
@@ -642,6 +640,10 @@ services.openssh = {
                     install_url = "https://addons.mozilla.org/firefox/downloads/latest/ublock-origin/latest.xpi";
                     installation_mode = "force_installed";
       	        };
+		"{aecec67f-0d10-4fa7-b7c7-609a2db280cf}" = {
+		    install_url = "https://addons.mozilla.org/firefox/downloads/latest/violentmonkey/latest.xpi";
+		    installation_mode = "force_installed";
+		};
 		"{446900e4-71c2-419f-a6a7-df9c091e268b}" = {
 		    install_url = "https://addons.mozilla.org/firefox/downloads/latest/bitwarden-password-manager/latest.xpi";
 		    installation_mode = "force_installed";
@@ -750,7 +752,8 @@ services.openssh = {
   };
 
   time.timeZone = "Pacific/Auckland";
-
+  #time.timeZone = "Australia/Sydney";
+ 
   i18n.defaultLocale = "en_NZ.UTF-8";
 
   i18n.extraLocaleSettings = {
@@ -788,11 +791,6 @@ services.openssh = {
     xkbVariant = "";
   };
 
-  nix = {
-    extraOptions = ''
-
-    '';
-  };
 
   services.printing.enable = true;
 
@@ -864,7 +862,7 @@ services.openssh = {
 
   hardware.pulseaudio.support32Bit = true;
 
-  boot.tmp.useTmpfs = true;
+  #boot.tmp.useTmpfs = true;
   system = {
 	stateVersion = "24.11"; 
         activationScripts = { 
