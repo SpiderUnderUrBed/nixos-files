@@ -21,12 +21,14 @@ startup = pkgs.writeShellApplication {
 
   '';
 };
-kdePkgs = import (builtins.fetchTarball {
-    url = "https://github.com/NixOS/nixpkgs/archive/20afb4559c29bf544eeffb90a2dfd1afd6541902";
-});
-pinnedKde = final: prev: {
-    services.xserver.desktopManager.plasma6 = kdePkgs.services.xserver.desktopManager.plasma6;
-};
+#kdePkgs = import (builtins.fetchTarball {
+#    url = "https://github.com/NixOS/nixpkgs/archive/20afb4559c29bf544eeffb90a2dfd1afd6541902";
+#});
+#pinnedKde = final: prev: {
+#    services.xserver.desktopManager.plasma6 = kdePkgs.services.xserver.desktopManager.plasma6;
+#};
+hyprlandEnable = true;
+secondaryEnable = true;
 arion = pkgs.writeShellApplication {
   name = "arion";
   runtimeInputs = [
@@ -57,7 +59,7 @@ in
 {
 nixpkgs.config.allowUnsupportedSystem = true;
 nixpkgs.overlays = [
-pinnedKde
+#pinnedKde
 
 ];
 
@@ -197,7 +199,7 @@ expressvpn.enable = true;
  # nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
   environment.systemPackages = with pkgs; 
-  [
+  (lib.optionals hyprlandEnable [
    # overskride
     hyprland
     copyq
@@ -205,8 +207,8 @@ expressvpn.enable = true;
     swayosd
     pavucontrol
     kitty
-  ] ++
-  [
+  ]) ++
+  (lib.optionals secondaryEnable [
     #pyenv
     bc
     jq
@@ -215,9 +217,14 @@ expressvpn.enable = true;
     pavucontrol
     xwayland
     xwayland-satellite
- ] ++
+ ]) ++
   [
+	#parted
+	#mplayer
+	killall
 #	lf
+	unzip
+	blesh
 	pyenv
 	appimage-run
 	rmtrash
@@ -609,7 +616,7 @@ services.openssh = {
      enable = true;
    };
   #hyprland = (hyprlandConfig);
-
+  java = { enable = true; };
   chromium = {
         enable = true;
 
@@ -736,7 +743,11 @@ services.openssh = {
 
   ];
 
-  boot.kernel.sysctl = { "net.ipv4.tcp_window_scaling" = true; "net.ipv4.conf.all.forwarding" = true; };
+  boot.kernel.sysctl = {
+	 "kernel.unprivileged_userns_clone" = 1; 
+	 "net.ipv4.tcp_window_scaling" = true;
+	 "net.ipv4.conf.all.forwarding" = true;
+	 };
   boot.supportedFilesystems = [ "ntfs" ];
 
   boot.runSize = "100%";

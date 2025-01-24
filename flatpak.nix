@@ -48,8 +48,8 @@ in
   #services.flatpak.uninstallUnmanagedPackages = true;
   services.flatpak.packages = [
 #<<<<<<< HEAD
-	{ appId = "moe.launcher.the-honkers-railway-launcher"; origin = "gol"; }
-	{ appId = "moe.launcher.an-anime-game-launcher"; origin = "gol"; }
+	#{ appId = "moe.launcher.the-honkers-railway-launcher"; origin = "gol"; }
+	#{ appId = "moe.launcher.an-anime-game-launcher"; origin = "gol"; }
 #=======
 	{ flatpakref = "file:///home/spiderunderurbed/sober.flatpakref"; sha256="54546f6e843b219c180d0bc47168a63ae9e8eef223fb9133b4ebf1087bf048de"; }
 	#{ flatpakref = "file:///home/spiderunderurbed/org.gnome.Snapshot.flatpakref"; sha256="7f989f68294ccd11ec61c53872092e2bf7fbb6cef9fcb7ac453ca8f62398da9a"; }
@@ -62,6 +62,7 @@ in
 	#"net.ankiweb.Anki"
 	"org.gnome.Snapshot"
 	#"org.gnome.Cheese"
+	"io.appflowy.AppFlowy"
 	"org.vinegarhq.Vinegar"
 	"chat.simplex.simplex"
 	"net.minetest.Minetest"
@@ -69,7 +70,7 @@ in
 #	"io.github.david_swift.Flashcards"
 	#"com.github.phase1geo.minder"
 	"com.belmoussaoui.Decoder"
-	"io.gitlab.librewolf-community"
+	#"io.gitlab.librewolf-community"
 	"dev.vencord.Vesktop"
 	"com.rafaelmardojai.Blanket"
 	"io.gitlab.idevecore.Pomodoro"
@@ -110,6 +111,9 @@ in
 #=======
 #	"net.brinkervii.grapejuice"
 #	"org.vinegarhq.Vinegar"
+	"io.appflowy.AppFlowy"
+	"org.kde.kcolorchooser"
+	"org.wireshark.Wireshark"
 	"org.gnome.Calculator"
 	"org.gnome.Calendar"
 	"org.qbittorrent.qBittorrent"
