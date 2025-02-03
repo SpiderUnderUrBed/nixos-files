@@ -2,7 +2,6 @@
 
 let 
   homeInputs = (builtins.getFlake ./spiderunderurbed/flake.nix).inputs; 
-  
   #hyprlandConfig = ((import ./hyprland.nix) { lib = lib; pkgs = pkgs; inputs = homeInputs; }) // { enable = false; };
   patchDesktop = pkg: appName: from: to: lib.hiPrio (
     pkgs.runCommand "$patched-desktop-entry-for-${appName}" {} ''
@@ -12,8 +11,8 @@ let
   GPUOffloadApp = pkg: desktopName: patchDesktop pkg desktopName "^Exec=" "Exec=nvidia-offload ";
 
   acermodule = config.boot.kernelPackages.callPackage ./acer-module.nix {};
-  vfio = pkgs.writeShellApplication {
-     name = "vfio";
+  coreutils = pkgs.writeShellApplication {
+     name = "coreutils";
      runtimeInputs = [
 	pkgs.coreutils
      ];
@@ -21,9 +20,6 @@ let
 	realpath /dev/dri/by-path/pci-0000:00:02.0-card 
      '';
   };
-#unstablePkgs = import (fetchTarball "https://github.com/NixOS/nixpkgs/archive/nixos-unstable.tar.gz") {};
-baseconfig = { allowUnfree = true; };
-unstable = import inputs.unstable { config = baseconfig; };
 
 startup = pkgs.writeShellApplication {
   name = "startup";
@@ -462,20 +458,10 @@ hardware.enableAllFirmware = true;
 
   nixpkgs.config.nvidia.acceptLicense = true;
   services.xserver.videoDrivers = ["nvidia" "modesetting"];
-
-  hardware.opengl.enable = true;
-  #hardware.opengl.driSupport = true;
-  hardware.opengl.driSupport32Bit = true;
-
-  hardware.graphics.enable = true;
-  hardware.graphics.enable32Bit = true;
-	
-
   hardware.nvidia = {
-    #package = unstablePkgs
     package = config.boot.kernelPackages.nvidiaPackages.beta;
     modesetting.enable = true;
-    open = false;
+    open = true;
     nvidiaSettings = true;
     dynamicBoost.enable = true;
 
@@ -483,6 +469,7 @@ hardware.enableAllFirmware = true;
       enable = true;
 
     };
+
     prime = {
       intelBusId = "PCI:00:02:0"; 
 
@@ -532,11 +519,9 @@ hardware.enableAllFirmware = true;
    };
   };
   DVfio.configuration = {
-	environment.variables = {
-	  KWIN_DRM_DEVICES = lib.mkForce "";
-	};
 	environment.extraInit = ''
-		export KWIN_DRM_DEVICES=$(${vfio}/bin/vfio)
+
+		export KWIN_DRM_DEVICES=$(${coreutils}/bin/coreutils)
   	'';
   };
   Battery.configuration = {
@@ -581,8 +566,8 @@ services.openssh.ports = [3060];
 services.udev.packages = [ pkgs.yubikey-personalization pkgs.libu2f-host ];
 
   boot.kernelPackages = 
-#	pkgs.linuxPackages_latest;
-	unstable.linuxPackages_zen;
+	pkgs.linuxPackages_latest;
+	#pkgs.linuxPackages_zen;
 
   boot.extraModulePackages = 
 
@@ -619,9 +604,7 @@ services.openssh = {
   environment.shellInit = ''
     export GPG_TTY="$(tty)"
   '';
-  environment.variables = rec {
-    KWIN_DRM_DEVICES="/dev/dri/card0:/dev/dri/card1";
-  };
+
   environment.etc = {
       "jdks/17".source = "${pkgs.openjdk17}/bin";
       "jdks/8".source = "${pkgs.openjdk8}/bin";
@@ -739,11 +722,7 @@ services.openssh = {
 	shellInit = "export NIXPKGS_ALLOW_INSECURE=1"; 
     };
     steam = {
-    #package = with pkgs; (GPUOffloadApp steam "steam");
-     package = unstable.steam;
-     extraCompatPackages = with pkgs; [
-       proton-ge-bin
-     ];
+     package = with pkgs; (GPUOffloadApp steam "steam");
      enable = true;
       remotePlay.openFirewall = true; 
       dedicatedServer.openFirewall = true; 
@@ -922,7 +901,6 @@ services.openssh = {
 
   #boot.tmp.useTmpfs = true;
   system = {
-#	kernelPackages = unstable.system.linuxPackages_latest;
 	stateVersion = "24.11"; 
         activationScripts = { 
 	stdio = lib.mkForce {

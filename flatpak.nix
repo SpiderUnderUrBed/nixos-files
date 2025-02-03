@@ -111,6 +111,7 @@ in
 #=======
 #	"net.brinkervii.grapejuice"
 #	"org.vinegarhq.Vinegar"
+	"org.kde.kclock"
 	"io.appflowy.AppFlowy"
 	"org.kde.kcolorchooser"
 	"org.wireshark.Wireshark"

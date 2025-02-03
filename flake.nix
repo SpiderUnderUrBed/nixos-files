@@ -17,6 +17,7 @@
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.11";
     auto-cpufreq = {
       url = "github:AdnanHodzic/auto-cpufreq";
@@ -55,6 +56,7 @@
     arion, 
     #home-manager, 
     nix-flatpak, 
+    unstable,
    # plasma-manager, 
     nix-software-center, 
     flake-compat, 

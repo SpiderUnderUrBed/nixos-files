@@ -1,0 +1,105 @@
+print("Starting script...")
+
+source_om = ObjectManager({
+  Interest({
+    type = "node",
+    Constraint({ "node.name", "matches", "v4l2_input.*" }),  -- Match any V4L2 input device
+  }),
+})
+
+sink_om = ObjectManager({
+  Interest({
+    type = "node",
+    Constraint({ "media.class", "matches", "Video/Source" }),  -- Match any video source application
+  }),
+})
+
+-- Debugging: Confirm activation
+print("Activating source_om...")
+source_om:activate()
+print("Activating sink_om...")
+sink_om:activate()
+
+MyLink = nil
+
+-- Add debug to ensure that object managers are being activated
+print("Source and sink object managers activated.")
+
+-- Set to track already processed devices by their unique node.id
+local processed_sources = {}
+local processed_sinks = {}
+
+local function create_link()
+  print("Creating link...")
+  if MyLink == nil then
+    -- Limit to a maximum number of iterations to avoid infinite loops
+    local max_iterations = 100
+    local iteration_count = 0
+    
+    -- Iterate over the sources
+    for source in source_om:iterate() do
+      print("Processing source...")
+      if iteration_count >= max_iterations then
+        print("❌ Max iterations reached. Exiting loop.")
+        break
+      end
+      iteration_count = iteration_count + 1
+      
+      if source.properties["node.description"]:find("C270") then  -- Ensure it's the Logitech C270
+        -- Track the source by its node.id
+        if not processed_sources[source.properties["node.id"]] then
+          processed_sources[source.properties["node.id"]] = true
+          
+          -- Debug: Log source name and properties
+          print("Processing source: " .. source.properties["node.name"])
+          
+          for sink in sink_om:iterate() do
+            -- Track the sink by its node.id
+            if not processed_sinks[sink.properties["node.id"]] then
+              processed_sinks[sink.properties["node.id"]] = true
+              
+              -- Debug: Log sink name and properties
+              print("Processing sink: " .. sink.properties["node.name"])
+              
+              -- Prevent self-linking by comparing node IDs explicitly
+              if source.properties["node.id"] ~= sink.properties["node.id"] then
+                -- Create and activate the link
+                MyLink = Link("link-factory", {
+                  ["link.output.node"] = source.properties["node.id"],
+                  ["link.input.node"] = sink.properties["node.id"],
+                })
+                MyLink:activate(1)
+                print("✅ Webcam linked: " .. source.properties["node.name"] .. " -> " .. sink.properties["node.name"])
+              else
+                print("❌ Skipping self-linking: " .. source.properties["node.name"] .. " is the same as " .. sink.properties["node.name"])
+              end
+            end
+          end
+        end
+      end
+    end
+  end
+end
+
+-- Add debug before event connection
+print("Connecting events...")
+
+-- Connecting the event handlers to create the link when objects are added or installed
+source_om:connect("installed", function() 
+  print("Source installed event triggered.")
+  create_link() 
+end)
+sink_om:connect("installed", function() 
+  print("Sink installed event triggered.")
+  create_link() 
+end)
+source_om:connect("object-added", function() 
+  print("Source object-added event triggered.")
+  create_link() 
+end)
+sink_om:connect("object-added", function() 
+  print("Sink object-added event triggered.")
+  create_link() 
+end)
+
+print("Event handlers connected.")
