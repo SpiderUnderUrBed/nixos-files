@@ -17,8 +17,9 @@
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.11";
+  nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+  stable.url = "github:NixOS/nixpkgs/nixos-24.11";
+  #secondary.url = "github:NixOS/nixpkgs/nixos-24.11";
     auto-cpufreq = {
       url = "github:AdnanHodzic/auto-cpufreq";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -54,9 +55,10 @@
     auto-cpufreq, 
     envycontrol, 
     arion, 
+    stable,
     #home-manager, 
     nix-flatpak, 
-    unstable,
+   # secondary,
    # plasma-manager, 
     nix-software-center, 
     flake-compat, 
@@ -82,13 +84,13 @@
 #       nixpkgs.overlays = [
 #         (final: prev: {
 #           extraSpecialArgs = {
-#      	     inherit inputs;  # Pass inputs as extraSpecialArgs
-#     	   };
-#  	  })
-#	];
+#            inherit inputs;  # Pass inputs as extraSpecialArgs
+#          };
+#         })
+#       ];
 
  #     imports = [
-#	(import ./flatpak.nix { inherit inputs })
+#       (import ./flatpak.nix { inherit inputs })
 #      ];
       specialArgs = { inherit inputs; };
       modules = [
@@ -96,17 +98,17 @@
         auto-cpufreq.nixosModules.default
         ./vfio.nix
         ./configuration.nix
-	./boot.nix
-	#./flatpak.nix
-	./registry.nix
-	./flatpak.nix
-	#(import ./flatpak.nix { inherit lib pkgs inputs; }) 
-#	(import ./registry.nix { inherit lib pkgs inputs config; })
-#		extraSpecialArgs = {
-#			inherit inputs;
-#		}
-		#inherit inputs; 
-#	})
+        ./boot.nix
+        #./flatpak.nix
+        ./registry.nix
+        ./flatpak.nix
+        #(import ./flatpak.nix { inherit lib pkgs inputs; }) 
+#       (import ./registry.nix { inherit lib pkgs inputs config; })
+#               extraSpecialArgs = {
+#                       inherit inputs;
+#               }
+                #inherit inputs; 
+#       })
 #<<<<<<< HEAD
 #        home-manager.nixosModules.home-manager
 #        {
@@ -114,21 +116,21 @@
 #          home-manager.useUserPackages = true;
 #        }
 #=======
-	nix-flatpak.nixosModules.nix-flatpak
-	home-manager.nixosModules.home-manager
-	{
-	  home-manager.useGlobalPkgs = true;
+        nix-flatpak.nixosModules.nix-flatpak
+        home-manager.nixosModules.home-manager
+        {
+          home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
-	}
+        }
 #>>>>>>> cdcb124 (Initial commit)
         {
-	  #environment.etc."flake.lock".source = "${flakeDir}/flake.lock";
+          #environment.etc."flake.lock".source = "${flakeDir}/flake.lock";
           environment.systemPackages = with pkgs; [
             envycontrol.packages.${system}.default
           ];
   #        #boot.loader.systemd-boot.enable = pkgs.lib.mkForce false;
  #         boot.lanzaboote = {
-#	    enable = false;
+#           enable = false;
  #           #enable = true;
  #           pkiBundle = "/etc/secureboot";
 #          };

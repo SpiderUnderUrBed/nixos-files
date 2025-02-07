@@ -15,15 +15,35 @@ let
   vfio = pkgs.writeShellApplication {
      name = "vfio";
      runtimeInputs = [
-	pkgs.coreutils
+        pkgs.coreutils
      ];
      text = ''
-	realpath /dev/dri/by-path/pci-0000:00:02.0-card 
+        realpath /dev/dri/by-path/pci-0000:00:02.0-card 
      '';
   };
+
 #unstablePkgs = import (fetchTarball "https://github.com/NixOS/nixpkgs/archive/nixos-unstable.tar.gz") {};
-baseconfig = { allowUnfree = true; };
-unstable = import inputs.unstable { config = baseconfig; };
+baseconfig = { 
+	allowUnfree = true; 
+#	expressvpn.enable = true;
+};
+stable = import inputs.stable { config = baseconfig; };
+#secondary = import inputs.secondary { config = baseconfig; };
+#baseconfig = { allowUnfree = true; };
+
+# Check if inputs.nixpkgs version is 24.11, and set 'secondary' accordingly
+#unstable = if inputs.nixpkgs.version == "24.11" thene
+  #import inputs.secondary { config = baseconfig; }
+#else
+  #pkgs;
+
+#baseconfig = { allowUnfree = true; };
+
+# Check if the nixpkgs URL corresponds to the stable version (24.11)
+#stable = if (inputs.nixpkgs.url == "github:NixOS/nixpkgs/nixos-24.11") then
+#  import inputs.secondary { config = baseconfig; }
+#else
+#  pkgs;
 
 startup = pkgs.writeShellApplication {
   name = "startup";
@@ -165,7 +185,7 @@ enable = false;
 displayManager = {
    execCmd = lib.mkDefault "exec ${pkgs.sddm}/bin/sddm";
    sessionPackages = [
- 	pkgs.hyprland
+        pkgs.hyprland
   ];
 
 };
@@ -197,22 +217,27 @@ address="47XA83EZZvdiBbtJH7oF5UYvzCGFEW94dHFRamPFoaDfjXHJDWHuHHQYP9qDTb2itr3ZijV
 
   syncthing = {
         enable = true;
-	user = "spiderunderurbed";
-	configDir = "/home/spiderunderurbed/syncthing/etc";
-	dataDir = "/home/spiderunderurbed/syncthing/data";
+        user = "spiderunderurbed";
+        configDir = "/home/spiderunderurbed/syncthing/etc";
+        dataDir = "/home/spiderunderurbed/syncthing/data";
    };
    packagekit.enable = true; 
 
-expressvpn.enable = true;	
-
+#expressvpn = { 
+#enable = true;
+#};
 };
 
  # nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
-  environment.systemPackages = with pkgs; 
+  environment.systemPackages = 
+  [ pkgs.expressvpn ]
+  ++ (with pkgs; 
   (lib.optionals hyprlandEnable [
    # overskride
-    hyprland
+    hdrop
+    hyprland 
+    hyprpaper
     copyq
     pasystray
     swayosd
@@ -230,215 +255,215 @@ expressvpn.enable = true;
     xwayland-satellite
  ]) ++
   [
-	pciutils
-	libnotify
-	#parted
-	#mplayer
-	killall
-#	lf
-	unzip
-	blesh
-	pyenv
-	appimage-run
-	rmtrash
-	waypipe
-	tree
-	php
-	alsa-lib
-	pkg-config
- 	openssl
-	ollama
-	rustup
-	tldr
-	sbctl
-	efibootmgr
-	anki
-	cryfs
-	sherlock
-	shell-gpt
-	feh
+        pciutils
+        libnotify
+        #parted
+        #mplayer
+        killall
+#       lf
+        unzip
+        blesh
+        pyenv
+        appimage-run
+        rmtrash
+        waypipe
+        tree
+        php
+        alsa-lib
+        pkg-config
+        openssl
+        ollama
+        rustup
+        tldr
+        sbctl
+        efibootmgr
+        anki
+        cryfs
+        sherlock
+        shell-gpt
+        feh
 
-	yt-dlp
-	gh
-	avml
-	volatility3
-	wget
-	bsd-finger
-	pnpm
+        yt-dlp
+        gh
+        avml
+        volatility3
+        wget
+        bsd-finger
+        pnpm
 
-	brave
-	google-chrome
-	home-manager
-	swift
-#	xclicker
-	lutris-free
-	android-studio
-	legendary-gl
-	wine
-	nmap
+        brave
+        google-chrome
+        home-manager
+        swift
+#       xclicker
+        lutris-free
+        android-studio
+        legendary-gl
+        wine
+        nmap
 
-#	heroic
-	gcc
-	sl
-	cmatrix
-	weston
-	expressvpn
-	rustfmt
+#       heroic
+        gcc
+        sl
+        cmatrix
+        weston
+        
+        rustfmt
 
-	protonmail-bridge
-	guake
-	cloudflared
-	vitetris
+        protonmail-bridge
+        guake
+        cloudflared
+        vitetris
 
-	ettercap
+        ettercap
 
-	audacity
-#	bottles
+        audacity
+#       bottles
 
-	vlc
-	virt-manager
-	bleachbit
+        vlc
+        virt-manager
+        bleachbit
 
-	screen
-	stacer
-	xmrig
-	monero-gui
-	duperemove
+        screen
+        stacer
+        xmrig
+        monero-gui
+        duperemove
 
-	tmux
-	typescript
-	bun
-	go
-	bluetuith
-	mangohud
-	hyfetch
-	keychain
-	(vscode-with-extensions.override {
-	   vscodeExtensions = with vscode-extensions; [ 
+        tmux
+        typescript
+        bun
+        go
+        bluetuith
+        mangohud
+        hyfetch
+        keychain
+        (vscode-with-extensions.override {
+           vscodeExtensions = with vscode-extensions; [ 
 
-	      svelte.svelte-vscode
+              svelte.svelte-vscode
 
-	     (pkgs.vscode-utils.buildVscodeMarketplaceExtension { 
-		    mktplcRef = {
-     		      name = "python";
-		      version = "1.19.1";
+             (pkgs.vscode-utils.buildVscodeMarketplaceExtension { 
+                    mktplcRef = {
+                      name = "python";
+                      version = "1.19.1";
 
-		      publisher = "ms-python";
-		    };
-		    vsix = /home/spiderunderurbed/ms-python-latest.zip;
+                      publisher = "ms-python";
+                    };
+                    vsix = /home/spiderunderurbed/ms-python-latest.zip;
 
-	       })
+               })
 
-	      ritwickdey.liveserver
-	      sswg.swift-lang
-	      vadimcn.vscode-lldb
-	      bbenoist.nix
+              ritwickdey.liveserver
+              sswg.swift-lang
+              vadimcn.vscode-lldb
+              bbenoist.nix
 
-	      ms-vscode-remote.remote-containers
-	      ms-vscode-remote.remote-ssh
+              ms-vscode-remote.remote-containers
+              ms-vscode-remote.remote-ssh
 
-	      rust-lang.rust-analyzer
-	      ms-azuretools.vscode-docker
+              rust-lang.rust-analyzer
+              ms-azuretools.vscode-docker
 
-	      eamodio.gitlens
-	  ] ++ pkgs.vscode-utils.extensionsFromVscodeMarketplace [
+              eamodio.gitlens
+          ] ++ pkgs.vscode-utils.extensionsFromVscodeMarketplace [
 
-		{
-		name = "remove-comments";
-		publisher = "plibither8";
-		version = "1.2.2";
-		sha256 = "ca2ef0e0a937a3da822c849a98c587d280b464287f590883b4febb2ec186d7de";
-		}
-		{
-		name = "vencord-companion";
-		publisher = "Vendicated";
+                {
+                name = "remove-comments";
+                publisher = "plibither8";
+                version = "1.2.2";
+                sha256 = "ca2ef0e0a937a3da822c849a98c587d280b464287f590883b4febb2ec186d7de";
+                }
+                {
+                name = "vencord-companion";
+                publisher = "Vendicated";
 
-		version = "0.1.3";
-		sha256 = "9854440646f703deb7a5a1ec3e115a60b7c87c8ea0d17f46bbd45502d5e100e4";
-		}
+                version = "0.1.3";
+                sha256 = "9854440646f703deb7a5a1ec3e115a60b7c87c8ea0d17f46bbd45502d5e100e4";
+                }
 
-		{
+                {
 
-		 name = "codespaces";
-		 publisher = "Github";
-		 version = "1.16.17";
-		 sha256 = "e9c47ef5f69b8cba144f2dc4038f6aaef4274c52b45c6b533008a3db897d546a";
-		}
-		{
-        		name = "remote-ssh-edit";
-        		publisher = "ms-vscode-remote";
-        		version = "0.47.2";
-        		sha256 = "1hp6gjh4xp2m1xlm1jsdzxw9d8frkiidhph6nvl24d0h8z34w49g";
-      		}
-	        {
-        	  	name = "Go";
-        		publisher = "golang";
-        	  	version = "0.42.0";
-      		  	sha256 = "f47c9ee44ccbb181fc5f718de3ee27de3349d4f603ec155fccef332a882141d5";
-     		}
+                 name = "codespaces";
+                 publisher = "Github";
+                 version = "1.16.17";
+                 sha256 = "e9c47ef5f69b8cba144f2dc4038f6aaef4274c52b45c6b533008a3db897d546a";
+                }
+                {
+                        name = "remote-ssh-edit";
+                        publisher = "ms-vscode-remote";
+                        version = "0.47.2";
+                        sha256 = "1hp6gjh4xp2m1xlm1jsdzxw9d8frkiidhph6nvl24d0h8z34w49g";
+                }
+                {
+                        name = "Go";
+                        publisher = "golang";
+                        version = "0.42.0";
+                        sha256 = "f47c9ee44ccbb181fc5f718de3ee27de3349d4f603ec155fccef332a882141d5";
+                }
 
-	  ];
-	})
+          ];
+        })
 
-	git-credential-manager
-	python3
-	logseq
-	rage
-	onlyoffice-bin
+        git-credential-manager
+        python3
+        logseq
+        rage
+        onlyoffice-bin
 
-	vesktop
+        vesktop
 
-	thefuck
-	zoxide
-	chezmoi
-	xorg.xhost
+        thefuck
+        zoxide
+        chezmoi
+        xorg.xhost
 
-	latte-dock
-	cargo
-	rustc 
-	nextcloud-client
-	keepassxc
+        latte-dock
+        cargo
+        rustc 
+        nextcloud-client
+        keepassxc
 
-	prismlauncher
-	minicom
+        prismlauncher
+        minicom
 
-	thunderbird
-	yubikey-agent
-	yubikey-touch-detector
-	age-plugin-yubikey
-	yubikey-personalization-gui
-	yubikey-manager
+        thunderbird
+        yubikey-agent
+        yubikey-touch-detector
+        age-plugin-yubikey
+        yubikey-personalization-gui
+        yubikey-manager
 
-	godot3
+        godot3
 
-	emacs
+        emacs
 
-	vscodium
-	pcscliteWithPolkit.out
-	pcsclite  
+        vscodium
+        pcscliteWithPolkit.out
+        pcsclite  
         gnupg
 
-	yakuake 
-	config.services.headscale.package  
-	nginx 
-	docker-compose
-	distrobox 
+        yakuake 
+        config.services.headscale.package  
+        nginx 
+        docker-compose
+        distrobox 
         git 
-	gparted 
-	htop 
-	libfido2 
-	linux-pam 
-	usbutils
-	docker
-	age
-	hyprshot
+        gparted 
+        htop 
+        libfido2 
+        linux-pam 
+        usbutils
+        docker
+        age
+        hyprshot
 
-#	nix-software-center
-	nodejs
+#       nix-software-center
+        nodejs
 
-	arion
+        arion
 
-  ];
+  ]);
 
 virtualisation = {
 docker.enable = true;
@@ -461,15 +486,15 @@ hardware.bluetooth.powerOnBoot = true;
 hardware.enableAllFirmware = true;
 
   nixpkgs.config.nvidia.acceptLicense = true;
-  services.xserver.videoDrivers = ["nvidia" "modesetting"];
+  services.xserver.videoDrivers = ["nvidia"];
 
-  hardware.opengl.enable = true;
+  #hardware.opengl.enable = true;
   #hardware.opengl.driSupport = true;
   hardware.opengl.driSupport32Bit = true;
 
   hardware.graphics.enable = true;
   hardware.graphics.enable32Bit = true;
-	
+
 
   hardware.nvidia = {
     #package = unstablePkgs
@@ -498,46 +523,46 @@ hardware.enableAllFirmware = true;
   };
 
   environment.sessionVariables = {
-#	"NIX_CONF_DIR" = "/etc/nixos/nix/";
+#       "NIX_CONF_DIR" = "/etc/nixos/nix/";
   };
 #ix.settings.experimental-features = [ "nix-command" "flakes" ];
   
   nix = {
-	settings = {
-		auto-optimise-store = true;
-		experimental-features = [ "nix-command" "flakes" ];
-	};
-	extraOptions = ''
-	  download-buffer-size = 67108864	
-	'';
+        settings = {
+                auto-optimise-store = true;
+                experimental-features = [ "nix-command" "flakes" ];
+        };
+        extraOptions = ''
+          download-buffer-size = 67108864
+        '';
   };
   specialisation = {
 
     GDM.configuration = {
    services = {
     displayManager = {
-	execCmd = lib.mkForce "exec ${pkgs.gdm}/bin/gdm";
+        execCmd = lib.mkForce "exec ${pkgs.gdm}/bin/gdm";
      };
      xserver = {
-	displayManager = {
+        displayManager = {
 
-	gdm = {
+        gdm = {
 
-		enable = true;
-		wayland = true;
+                enable = true;
+                wayland = true;
 
-	};
+        };
      };
     };
    };
   };
   DVfio.configuration = {
-	environment.variables = {
-	  KWIN_DRM_DEVICES = lib.mkForce "";
-	};
-	environment.extraInit = ''
-		export KWIN_DRM_DEVICES=$(${vfio}/bin/vfio)
-  	'';
+        environment.variables = {
+          KWIN_DRM_DEVICES = lib.mkForce "";
+        };
+        environment.extraInit = ''
+                export KWIN_DRM_DEVICES=$(${vfio}/bin/vfio)
+        '';
   };
   Battery.configuration = {
     system.nixos.tags = [ "Battery" ];
@@ -579,21 +604,23 @@ security.pam.services = {
 
 services.openssh.ports = [3060];
 services.udev.packages = [ pkgs.yubikey-personalization pkgs.libu2f-host ];
-
+  
+  #boot.`kernelParams = [ "
+  #boot.blacklistedKernelModules = [ "nouveau" ];
   boot.kernelPackages = 
-#	pkgs.linuxPackages_latest;
-	unstable.linuxPackages_zen;
+#       pkgs.linuxPackages_latest;
+        stable.linuxPackages_zen;
 
   boot.extraModulePackages = 
 
     [  
-	acermodule  
-	config.boot.kernelPackages.v4l2loopback.out
+        acermodule  
+        config.boot.kernelPackages.v4l2loopback.out
     ];
   boot.tmp = {
-	cleanOnBoot = true; 
-  	useTmpfs = true;
-	tmpfsSize = "100%";
+        cleanOnBoot = true; 
+        useTmpfs = true;
+        tmpfsSize = "100%";
   };
    boot.kernelModules = [
 
@@ -623,6 +650,12 @@ services.openssh = {
     KWIN_DRM_DEVICES="/dev/dri/card0:/dev/dri/card1";
   };
   environment.etc = {
+       #"nixos/test" = {
+	# source = pkgs.writeText "test.conf" ''
+	#  test
+	# '';
+	# mode = "0440";
+       #};
       "jdks/17".source = "${pkgs.openjdk17}/bin";
       "jdks/8".source = "${pkgs.openjdk8}/bin";
   };
@@ -644,77 +677,77 @@ services.openssh = {
         enable = true;
 
         extensions = [
-	   "enamippconapkdmgfgjchkhakpfinmaj" 
+           "enamippconapkdmgfgjchkhakpfinmaj" 
            "cjpalhdlnbpafiamejdnhcphjbkeiagm" 
            "nngceckbapebfimnlniiiahkandclblb" 
            "mnjggcdmjocbbbhaepdhchncahnbgone" 
            "eimadpbcbfnmbkopoojfekhnkhdbieeh" 
-	   "gebbhagfogifgggkldgodflihgfeippi" 
-	   "cimiefiiaegbelhefglklhhakcgmhkai" 
-	   "ghbmnnjooekpmoecnnnilnnbdlolhkhi" 
-	   "kaacflffkmlaiebklgemhmlfbhificko" 
-	   "cbghhgpcnddeihccjmnadmkaejncjndb"
-	   "kbfnbcaeplbcioakkpcpgfkobkghlhen" 
+           "gebbhagfogifgggkldgodflihgfeippi" 
+           "cimiefiiaegbelhefglklhhakcgmhkai" 
+           "ghbmnnjooekpmoecnnnilnnbdlolhkhi" 
+           "kaacflffkmlaiebklgemhmlfbhificko" 
+           "cbghhgpcnddeihccjmnadmkaejncjndb"
+           "kbfnbcaeplbcioakkpcpgfkobkghlhen" 
 
        ];
     };
     firefox = {
-	enable = true;
-	package = pkgs.librewolf;
+        enable = true;
+        package = pkgs.librewolf;
 
-	preferences = {
-	  "browser.tabs.groups.enabled" = true;
-	};
-	policies.ExtensionSettings = {
+        preferences = {
+          "browser.tabs.groups.enabled" = true;
+        };
+        policies.ExtensionSettings = {
                "uBlock0@raymondhill.net" = {
                     install_url = "https://addons.mozilla.org/firefox/downloads/latest/ublock-origin/latest.xpi";
                     installation_mode = "force_installed";
-      	        };
-		"{aecec67f-0d10-4fa7-b7c7-609a2db280cf}" = {
-		    install_url = "https://addons.mozilla.org/firefox/downloads/latest/violentmonkey/latest.xpi";
-		    installation_mode = "force_installed";
-		};
-		"{446900e4-71c2-419f-a6a7-df9c091e268b}" = {
-		    install_url = "https://addons.mozilla.org/firefox/downloads/latest/bitwarden-password-manager/latest.xpi";
-		    installation_mode = "force_installed";
-   	        };	
-		"addon@darkreader.org" = {
-		    install_url = "https://addons.mozilla.org/firefox/downloads/latest/darkreader/latest.xpi";
-		    installation_mode = "force_installed";
-		};
-		"{c2c003ee-bd69-42a2-b0e9-6f34222cb046}" = {
-		    install_url = "https://addons.mozilla.org/firefox/downloads/latest/auto-tab-discard/latest.xpi";
-		    installation_mode = "force_installed";
-		};
-		"sponsorBlocker@ajay.app" = {
-		    install_url = "https://addons.mozilla.org/firefox/downloads/latest/sponsorblock/latest.xpi";
-		    installation_mode = "force_installed";
-		};
-		"plasma-browser-integration@kde.org" = {
-		    install_url = "https://addons.mozilla.org/firefox/downloads/latest/plasma-integration/latest.xpi";
-		    installation_mode = "force_installed";
-		};
-		"deArrow@ajay.app" = {
-		    install_url = "https://addons.mozilla.org/firefox/downloads/latest/dearrow/latest.xpi";
-		    installation_mode = "force_installed";
-		};
+                };
+                "{aecec67f-0d10-4fa7-b7c7-609a2db280cf}" = {
+                    install_url = "https://addons.mozilla.org/firefox/downloads/latest/violentmonkey/latest.xpi";
+                    installation_mode = "force_installed";
+                };
+                "{446900e4-71c2-419f-a6a7-df9c091e268b}" = {
+                    install_url = "https://addons.mozilla.org/firefox/downloads/latest/bitwarden-password-manager/latest.xpi";
+                    installation_mode = "force_installed";
+                };
+                "addon@darkreader.org" = {
+                    install_url = "https://addons.mozilla.org/firefox/downloads/latest/darkreader/latest.xpi";
+                    installation_mode = "force_installed";
+                };
+                "{c2c003ee-bd69-42a2-b0e9-6f34222cb046}" = {
+                    install_url = "https://addons.mozilla.org/firefox/downloads/latest/auto-tab-discard/latest.xpi";
+                    installation_mode = "force_installed";
+                };
+                "sponsorBlocker@ajay.app" = {
+                    install_url = "https://addons.mozilla.org/firefox/downloads/latest/sponsorblock/latest.xpi";
+                    installation_mode = "force_installed";
+                };
+                "plasma-browser-integration@kde.org" = {
+                    install_url = "https://addons.mozilla.org/firefox/downloads/latest/plasma-integration/latest.xpi";
+                    installation_mode = "force_installed";
+                };
+                "deArrow@ajay.app" = {
+                    install_url = "https://addons.mozilla.org/firefox/downloads/latest/dearrow/latest.xpi";
+                    installation_mode = "force_installed";
+                };
 
-		"87677a2c52b84ad3a151a4a72f5bd3c4@jetpack" = {
-		    install_url = "https://addons.mozilla.org/firefox/downloads/latest/grammarly-1/latest.xpi";
-		    installation_mode = "force_installed";
-		};
+                "87677a2c52b84ad3a151a4a72f5bd3c4@jetpack" = {
+                    install_url = "https://addons.mozilla.org/firefox/downloads/latest/grammarly-1/latest.xpi";
+                    installation_mode = "force_installed";
+                };
 
-    	  };
+          };
     };
 
     gamescope.enable = true;
     anime-game-launcher.enable = true;
     ssh = {
-	extraConfig = ''
-		PermitLocalCommand=yes
-	'';
+        extraConfig = ''
+                PermitLocalCommand=yes
+        '';
 
-	askPassword = "${pkgs.x11_ssh_askpass}/libexec/x11-ssh-askpass";
+        askPassword = "${pkgs.x11_ssh_askpass}/libexec/x11-ssh-askpass";
     };
 
     dconf= {
@@ -731,16 +764,16 @@ services.openssh = {
     xwayland.enable = true;
 
     proxychains = {
-	enable = false;
+        enable = false;
 
     };
     kdeconnect.enable = true;
     bash = {
-	shellInit = "export NIXPKGS_ALLOW_INSECURE=1"; 
+        shellInit = "export NIXPKGS_ALLOW_INSECURE=1"; 
     };
     steam = {
     #package = with pkgs; (GPUOffloadApp steam "steam");
-     package = unstable.steam;
+     package = pkgs.steam;
      extraCompatPackages = with pkgs; [
        proton-ge-bin
      ];
@@ -763,18 +796,18 @@ services.openssh = {
   imports =
    [ 
 
-	./hyprland/nixos-module.nix
-	aagl.module
+        ./hyprland/nixos-module.nix
+        aagl.module
 
         ./hardware-configuration.nix
 
   ];
 
   boot.kernel.sysctl = {
-	 "kernel.unprivileged_userns_clone" = 1; 
-	 "net.ipv4.tcp_window_scaling" = true;
-	 "net.ipv4.conf.all.forwarding" = true;
-	 };
+         "kernel.unprivileged_userns_clone" = 1; 
+         "net.ipv4.tcp_window_scaling" = true;
+         "net.ipv4.conf.all.forwarding" = true;
+         };
   boot.supportedFilesystems = [ "ntfs" ];
 
   boot.runSize = "100%";
@@ -782,11 +815,11 @@ services.openssh = {
   networking.hostName = "daspidercave"; 
 
   networking.networkmanager = {
-	enable = true;
-  	wifi = {
-	 backend = "wpa_supplicant"; 
-	 powersave = false;
-  	};
+        enable = true;
+        wifi = {
+         backend = "wpa_supplicant"; 
+         powersave = false;
+        };
   };
 
   time.timeZone = "Pacific/Auckland";
@@ -810,13 +843,13 @@ services.openssh = {
 
     enable = true;
     displayManager = {
-		hiddenUsers = [ "jellyfin" ]; 
-		sddm = {
+                hiddenUsers = [ "jellyfin" ]; 
+                sddm = {
 
-			wayland.enable = true;
-			enable = true;
-	    	};
-	};
+                        wayland.enable = true;
+                        enable = true;
+                };
+        };
 
     desktopManager = {
      plasma6.enable = true; 
@@ -837,24 +870,24 @@ services.openssh = {
   services.pipewire = {
     enable = true;
     wireplumber = {
-	extraConfig = {
-		"stream.conf" = {
-			"stream.rules" = [
-      				{
-        			  matches = [
-          			     { "media.class" = "Stream/Input/Video"; }
-        			  ];
-        			  actions = {
-          			    update-props = {
-#            				"target.object" = "v4l2_input.pci-0000_00_14.0-usb-0_5_1.0";
-					"target.object" = "v4l2_input.pci-0000_00_14.0-usb-0_9_1.0";
-          			    };
-        			  };
-      				}
-    			];
-		};
-	};
-	enable = true;	
+        extraConfig = {
+                "stream.conf" = {
+                        "stream.rules" = [
+                                {
+                                  matches = [
+                                     { "media.class" = "Stream/Input/Video"; }
+                                  ];
+                                  actions = {
+                                    update-props = {
+#                                       "target.object" = "v4l2_input.pci-0000_00_14.0-usb-0_5_1.0";
+                                        "target.object" = "v4l2_input.pci-0000_00_14.0-usb-0_9_1.0";
+                                    };
+                                  };
+                                }
+                        ];
+                };
+        };
+        enable = true;
     };
     alsa.enable = true;
     alsa.support32Bit = true;
@@ -868,22 +901,22 @@ services.openssh = {
   ''; 
 
   fonts.packages = with pkgs; [
-  	noto-fonts
-  	noto-fonts-cjk-sans
-  	noto-fonts-emoji
-  	liberation_ttf
-  	fira-code
-  	fira-code-symbols
-  	mplus-outline-fonts.githubRelease
-  	dina-font
-  	proggyfonts
+        noto-fonts
+        noto-fonts-cjk-sans
+        noto-fonts-emoji
+        liberation_ttf
+        fira-code
+        fira-code-symbols
+        mplus-outline-fonts.githubRelease
+        dina-font
+        proggyfonts
   ];
 
   users.users = {
    jellyfin = {
      isNormalUser = true;
      description = "jellyfin";
-     extraGroups = [ "networkmanager" "wheel" ];	
+     extraGroups = [ "networkmanager" "wheel" ];
    };
    guest = {
      isNormalUser = true;
@@ -896,12 +929,12 @@ services.openssh = {
     #linger = true;
     openssh.authorizedKeys.keys = [];
     extraGroups = [ 
-	"libvirtd"
-	"networkmanager"
-	"wheel" 
-	"docker"
+        "libvirtd"
+        "networkmanager"
+        "wheel" 
+        "docker"
 
-	];
+        ];
     packages = with pkgs; [
       firefox
       kate
@@ -912,28 +945,28 @@ services.openssh = {
 
    nixpkgs.config.allowUnfree = true;
    nixpkgs.config.permittedInsecurePackages = [
-		"electron"
-           	"electron-27.3.11"
-		"electron-25.9.0"
-		"electron-28.3.3"
+                "electron"
+                "electron-27.3.11"
+                "electron-25.9.0"
+                "electron-28.3.3"
    ];
 
   hardware.pulseaudio.support32Bit = true;
 
   #boot.tmp.useTmpfs = true;
   system = {
-#	kernelPackages = unstable.system.linuxPackages_latest;
-	stateVersion = "24.11"; 
+#       kernelPackages = unstable.system.linuxPackages_latest;
+        stateVersion = "24.11"; 
         activationScripts = { 
-	stdio = lib.mkForce {
-        text = ''	
+        stdio = lib.mkForce {
+        text = ''
 
-	echo "Ran sucessfully"
+        echo "Ran sucessfully"
 
-	${arion}/bin/arion 
-	${startup}/bin/startup	
+        ${arion}/bin/arion 
+        ${startup}/bin/startup
         '';
-	};
+        };
   };
 };
 }

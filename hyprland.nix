@@ -23,13 +23,14 @@ let
 	#(lib.getExe pkgs.blue
         "${pkgs.blueman}/bin/blueman-applet"
         "${pkgs.networkmanagerapplet}/bin/nm-applet"
+	"${lib.getExe pkgs.hdrop} -d"
 #	(lib.getExe pkgs.hyprpaper)
 #	"systemctl start xwayland-ensure --user"
 #	"systemctl start pasystray-ensure --user"
 	(lib.getExe pkgs.pasystray)
 #        "${pkgs.pasystray}/bin/pasystray"
         #[workspace special; size 75% 20%;move 12.5% 40] kitty
-        "[workspace special; size 75% 20%;move 12.5% 40] kitty --class=kitty-dropdown"
+        #"[workspace special; size 75% 20%;move 12.5% 40] kitty --class=kitty-dropdown"
       ];
         #[workspace special; size 75% 20%;move 12.5% 40] kitty
       #"$dropterm"="kitty-dropdown"
@@ -93,8 +94,9 @@ let
         "SUPER+ESCAPE,s,exec,systemctl suspend"
         "SUPER+alt,k,exec,konsole"
         "SUPER+alt,s,exec,hyprshot -m region --freeze"
-        "SUPER,grave,exec,bash ~/home-manager/quake.sh"
-        "SUPER+alt,m,exec,flatpak run im.fluffychat.Fluffychat"
+        #"SUPER,grave,exec,bash ~/home-manager/quake.sh"
+        "SUPER,grave,exec,hdrop kitty"
+	"SUPER+alt,m,exec,flatpak run im.fluffychat.Fluffychat"
         "SUPER+shift,right,movewindow,mon:r"
         "SUPER+shift,left,movewindow,mon:l"
         "SUPER+alt,V,exec,flatpak run dev.vencord.Vesktop"
