@@ -215,22 +215,24 @@ address="47XA83EZZvdiBbtJH7oF5UYvzCGFEW94dHFRamPFoaDfjXHJDWHuHHQYP9qDTb2itr3ZijV
 };
 };
 
-  syncthing = {
+syncthing = {
         enable = true;
         user = "spiderunderurbed";
         configDir = "/home/spiderunderurbed/syncthing/etc";
         dataDir = "/home/spiderunderurbed/syncthing/data";
-   };
-   packagekit.enable = true; 
+};
+packagekit.enable = true; 
 
-#expressvpn = { 
-#enable = true;
-#};
+expressvpn = { 
+enable = true;
+package = stable.expressvpn;
+};
 };
 
  # nix.settings.experimental-features = [ "nix-command" "flakes" ];
+disabledModules = [ "services/networking/expressvpn.nix" ];
 
-  environment.systemPackages = 
+environment.systemPackages = 
   [ pkgs.expressvpn ]
   ++ (with pkgs; 
   (lib.optionals hyprlandEnable [
@@ -255,6 +257,8 @@ address="47XA83EZZvdiBbtJH7oF5UYvzCGFEW94dHFRamPFoaDfjXHJDWHuHHQYP9qDTb2itr3ZijV
     xwayland-satellite
  ]) ++
   [
+#	gamemoderun
+	localsend
         pciutils
         libnotify
         #parted
@@ -373,6 +377,12 @@ address="47XA83EZZvdiBbtJH7oF5UYvzCGFEW94dHFRamPFoaDfjXHJDWHuHHQYP9qDTb2itr3ZijV
                 publisher = "plibither8";
                 version = "1.2.2";
                 sha256 = "ca2ef0e0a937a3da822c849a98c587d280b464287f590883b4febb2ec186d7de";
+                }
+		{
+                name = "rustowl-vscode";
+                publisher = "cordx56";
+                version = "0.1.1";
+                sha256 = "c295da5fc07b966ae79b078c71aa0e64776dcdcdf9b099f263188cf3170231d4";
                 }
                 {
                 name = "vencord-companion";
@@ -660,6 +670,7 @@ services.openssh = {
       "jdks/8".source = "${pkgs.openjdk8}/bin";
   };
   programs = {
+  gamemode.enable = true;
   uwsm = {
     enable = true;
     waylandCompositors.hyprland = {
@@ -795,10 +806,9 @@ services.openssh = {
    users.extraGroups.vboxusers.members = [ "user-with-access-to-virtualbox" ];
   imports =
    [ 
-
+	./expressvpn.nix
         ./hyprland/nixos-module.nix
         aagl.module
-
         ./hardware-configuration.nix
 
   ];
@@ -870,23 +880,23 @@ services.openssh = {
   services.pipewire = {
     enable = true;
     wireplumber = {
-        extraConfig = {
-                "stream.conf" = {
-                        "stream.rules" = [
-                                {
-                                  matches = [
-                                     { "media.class" = "Stream/Input/Video"; }
-                                  ];
-                                  actions = {
-                                    update-props = {
-#                                       "target.object" = "v4l2_input.pci-0000_00_14.0-usb-0_5_1.0";
-                                        "target.object" = "v4l2_input.pci-0000_00_14.0-usb-0_9_1.0";
-                                    };
-                                  };
-                                }
-                        ];
-                };
-        };
+        #extraConfig = {
+        #        "stream.conf" = {
+        #                "stream.rules" = [
+        #                        {
+        #                          matches = [
+        #                             { "media.class" = "Stream/Input/Video"; }
+        #                          ];
+        #                          actions = {
+         #                           update-props = {
+#        #                               "target.object" = "v4l2_input.pci-0000_00_14.0-usb-0_5_1.0";
+         #                               "target.object" = "v4l2_input.pci-0000_00_14.0-usb-0_9_1.0";
+         #                           };
+         #                         };
+         #                       }
+         #               ];
+         #       };
+        #};
         enable = true;
     };
     alsa.enable = true;
