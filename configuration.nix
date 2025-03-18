@@ -1,4 +1,4 @@
-{ config, pkgs, inputs, lib, ... }:
+{ config, pkgs, inputs, lib, specialArgs, ... }:
 
 let 
   homeInputs = (builtins.getFlake ./spiderunderurbed/flake.nix).inputs; 
@@ -28,6 +28,7 @@ baseconfig = {
 #	expressvpn.enable = true;
 };
 stable = import inputs.stable { config = baseconfig; };
+#old = import inputs.old { config = baseconfig; };
 #secondary = import inputs.secondary { config = baseconfig; };
 #baseconfig = { allowUnfree = true; };
 
@@ -58,8 +59,8 @@ startup = pkgs.writeShellApplication {
 #pinnedKde = final: prev: {
 #    services.xserver.desktopManager.plasma6 = kdePkgs.services.xserver.desktopManager.plasma6;
 #};
-hyprlandEnable = true;
-secondaryEnable = true;
+hyprlandEnable = false;
+secondaryEnable = false;
 arion = pkgs.writeShellApplication {
   name = "arion";
   runtimeInputs = [
@@ -70,7 +71,6 @@ arion = pkgs.writeShellApplication {
     (import (fetchTarball "https://github.com/nixos/nixpkgs/archive/23.11.tar.gz") {}).arion
   ];
   text = ''
-
     screen -S arion_session -d -m nix-shell -p arion --run "arion -p /etc/nixos/arion-pkgs.nix -f /etc/nixos/arion-compose.nix up"
   '';
 };
@@ -85,6 +85,12 @@ arion = pkgs.writeShellApplication {
   }) {};
   concatMapStringsSep = { sep, f, list }:
     builtins.concatStringsSep sep (map (x: f x + "\n") list);
+  secretFile = config.secrets.secret1.file;
+    
+    echoService = pkgs.writeShellScript "netsecrets-echo" ''
+      echo "Secret file content:"
+      cat ${secretFile}
+    '';
 in 
 
 {
@@ -96,7 +102,34 @@ nixpkgs.overlays = [
 
 aagl.enableNixpkgsReleaseBranchCheck = false;
 
-systemd.user.services = {
+netsecrets = {
+  enable = true;
+  requesting = {
+    server = "127.0.0.1";
+    password = "your_password";
+    port = "8080";
+    priority = 0;
+    request_secrets = ["secret1" "enableecho"];
+  };
+
+  authorize = {
+    ipOrRange = ["192.168.68.0/24" "127.0.0.1/24"];
+    password = "your_password";
+    server = "127.0.0.1";
+    port = "8080";
+    secrets = {
+      secret1 = "/path/to/secret1";
+      enableecho = "true";
+      #secret2 = "/path/to/secret2";
+    };
+    verbose = true;
+  };
+};
+
+
+systemd = 
+{
+user.services = {
 #"dunst" = {
 #description = "Dunst notification daemon";
 #after = [ "wayland-wm@Hyprland.service" ];
@@ -132,6 +165,17 @@ systemd.user.services = {
 };
 #"hyprpaper-ensure"
 };
+  services.netsecrets-echo = {
+    description = "Echo NetSecrets Content";
+    wantedBy = [ "multi-user.target" ];
+    enable = config.secrets.enableecho == "true";
+    serviceConfig = {
+      ExecStart = echoService;
+      Restart = "no";
+      User = "root";
+    };
+  };
+};
 services = {
 
 };
@@ -163,8 +207,11 @@ nameservers = [
         }
       });
   '';
-services.tailscale.enable = true;
-
+services.tailscale = {
+package = pkgs.callPackage ./tailscale.nix {};
+#package = old.tailscale; 
+enable = true;
+};
 services = {
 
 geoclue2 = {
@@ -232,19 +279,26 @@ package = stable.expressvpn;
  # nix.settings.experimental-features = [ "nix-command" "flakes" ];
 disabledModules = [ "services/networking/expressvpn.nix" ];
 
+environment.plasma6.excludePackages = [ 
+#	pkgs.kdePackages.konsole
+ ];
+
 environment.systemPackages = 
-  [ pkgs.expressvpn ]
+  [ 
+         stable.expressvpn 
+  ]
   ++ (with pkgs; 
   (lib.optionals hyprlandEnable [
    # overskride
     hdrop
+    hyprshot
     hyprland 
     hyprpaper
     copyq
     pasystray
     swayosd
     pavucontrol
-    kitty
+   # kitty
   ]) ++
   (lib.optionals secondaryEnable [
     #pyenv
@@ -257,6 +311,21 @@ environment.systemPackages =
     xwayland-satellite
  ]) ++
   [
+#	ca-certificates
+	asciinema
+	mesa-demos
+	waveterm
+	dig
+	specialArgs.netsecrets.packages.${system}.netsecrets
+	wl-clipboard
+	rust-analyzer
+#	zed-editor
+	#mysql-workbench
+	#dbeaver-bin
+	wmctrl
+	sshpass
+	ansible
+#	ansible-galaxy
 #	gamemoderun
 	localsend
         pciutils
@@ -342,79 +411,7 @@ environment.systemPackages =
         mangohud
         hyfetch
         keychain
-        (vscode-with-extensions.override {
-           vscodeExtensions = with vscode-extensions; [ 
-
-              svelte.svelte-vscode
-
-             (pkgs.vscode-utils.buildVscodeMarketplaceExtension { 
-                    mktplcRef = {
-                      name = "python";
-                      version = "1.19.1";
-
-                      publisher = "ms-python";
-                    };
-                    vsix = /home/spiderunderurbed/ms-python-latest.zip;
-
-               })
-
-              ritwickdey.liveserver
-              sswg.swift-lang
-              vadimcn.vscode-lldb
-              bbenoist.nix
-
-              ms-vscode-remote.remote-containers
-              ms-vscode-remote.remote-ssh
-
-              rust-lang.rust-analyzer
-              ms-azuretools.vscode-docker
-
-              eamodio.gitlens
-          ] ++ pkgs.vscode-utils.extensionsFromVscodeMarketplace [
-
-                {
-                name = "remove-comments";
-                publisher = "plibither8";
-                version = "1.2.2";
-                sha256 = "ca2ef0e0a937a3da822c849a98c587d280b464287f590883b4febb2ec186d7de";
-                }
-		{
-                name = "rustowl-vscode";
-                publisher = "cordx56";
-                version = "0.1.1";
-                sha256 = "c295da5fc07b966ae79b078c71aa0e64776dcdcdf9b099f263188cf3170231d4";
-                }
-                {
-                name = "vencord-companion";
-                publisher = "Vendicated";
-
-                version = "0.1.3";
-                sha256 = "9854440646f703deb7a5a1ec3e115a60b7c87c8ea0d17f46bbd45502d5e100e4";
-                }
-
-                {
-
-                 name = "codespaces";
-                 publisher = "Github";
-                 version = "1.16.17";
-                 sha256 = "e9c47ef5f69b8cba144f2dc4038f6aaef4274c52b45c6b533008a3db897d546a";
-                }
-                {
-                        name = "remote-ssh-edit";
-                        publisher = "ms-vscode-remote";
-                        version = "0.47.2";
-                        sha256 = "1hp6gjh4xp2m1xlm1jsdzxw9d8frkiidhph6nvl24d0h8z34w49g";
-                }
-                {
-                        name = "Go";
-                        publisher = "golang";
-                        version = "0.42.0";
-                        sha256 = "f47c9ee44ccbb181fc5f718de3ee27de3349d4f603ec155fccef332a882141d5";
-                }
-
-          ];
-        })
-
+       
         git-credential-manager
         python3
         logseq
@@ -434,7 +431,7 @@ environment.systemPackages =
         nextcloud-client
         keepassxc
 
-        prismlauncher
+        #prismlauncher
         minicom
 
         thunderbird
@@ -448,14 +445,14 @@ environment.systemPackages =
 
         emacs
 
-        vscodium
+       # vscodium
         pcscliteWithPolkit.out
         pcsclite  
         gnupg
 
         yakuake 
-        config.services.headscale.package  
-        nginx 
+        #config.services.headscale.package  
+        #nginx 
         docker-compose
         distrobox 
         git 
@@ -466,12 +463,12 @@ environment.systemPackages =
         usbutils
         docker
         age
-        hyprshot
+        #hyprshot
 
 #       nix-software-center
         nodejs
 
-        arion
+        #arion
 
   ]);
 
@@ -494,6 +491,9 @@ virtualisation.oci-containers.containers.coweire.ports = ["22:2222"];
 hardware.bluetooth.enable = true; 
 hardware.bluetooth.powerOnBoot = true; 
 hardware.enableAllFirmware = true;
+hardware.opentabletdriver = {
+enable = false;
+};
 
   nixpkgs.config.nvidia.acceptLicense = true;
   services.xserver.videoDrivers = ["nvidia"];
@@ -526,8 +526,8 @@ hardware.enableAllFirmware = true;
       sync.enable = false;
 
       offload = {
-        enable = false;
-        enableOffloadCmd = false;
+        enable = true;
+        enableOffloadCmd = true;
       };
     };
   };
@@ -602,8 +602,8 @@ networking.firewall = {
   enable = true;
   checkReversePath = "loose";
   trustedInterfaces = [ "tailscale0" "waydroid0" ];
-  allowedTCPPorts = [ 3060 22 8384 22000 51820 67 53 ]; 
-  allowedUDPPorts = [ 22000 21027 51820 67 53 config.services.tailscale.port]; 
+  allowedTCPPorts = [ 8080 3060 22 8384 22000 51820 67 53 ]; 
+  allowedUDPPorts = [ 8080 22000 21027 51820 67 53 config.services.tailscale.port]; 
 
 };
 
@@ -617,9 +617,10 @@ services.udev.packages = [ pkgs.yubikey-personalization pkgs.libu2f-host ];
   
   #boot.`kernelParams = [ "
   #boot.blacklistedKernelModules = [ "nouveau" ];
-  boot.kernelPackages = 
+  boot.kernelPackages = pkgs.linuxPackages_cachyos;
+#with pkgs; linuxPackagesFor linuxPackages_cachyos;
 #       pkgs.linuxPackages_latest;
-        stable.linuxPackages_zen;
+#        stable.linuxPackages_zen;
 
   boot.extraModulePackages = 
 
@@ -747,7 +748,10 @@ services.openssh = {
                     install_url = "https://addons.mozilla.org/firefox/downloads/latest/grammarly-1/latest.xpi";
                     installation_mode = "force_installed";
                 };
-
+		"firefoxpwa@filips.si" = {
+		    install_url = "https://addons.mozilla.org/firefox/downloads/latest/pwas-for-firefox/latest.xpi";
+		    installation_mode = "force_installed";
+		};
           };
     };
 
@@ -785,10 +789,11 @@ services.openssh = {
     steam = {
     #package = with pkgs; (GPUOffloadApp steam "steam");
      package = pkgs.steam;
+    # platformOptimizations.enable = true;
      extraCompatPackages = with pkgs; [
        proton-ge-bin
      ];
-     enable = true;
+      enable = true;
       remotePlay.openFirewall = true; 
       dedicatedServer.openFirewall = true; 
     };
@@ -806,6 +811,7 @@ services.openssh = {
    users.extraGroups.vboxusers.members = [ "user-with-access-to-virtualbox" ];
   imports =
    [ 
+	#specialArgs.nix-gaming.nixosModules.platformOptimizations
 	./expressvpn.nix
         ./hyprland/nixos-module.nix
         aagl.module

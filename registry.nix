@@ -1,4 +1,4 @@
-{ lib, pkgs, inputs, options, specialArgs, modulesPath, config }: 
+{ lib, pkgs, inputs, options, specialArgs, modulesPath, config, ... }: 
 let
 #inherit config;
 inherit (lib.strings) escapeNixIdentifier;

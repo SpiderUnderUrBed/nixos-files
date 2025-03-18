@@ -11,10 +11,11 @@ let
      ];
      settings = {  
      "$terminal" = "konsole";
-     "$dropterm"="kitty-dropdown";
+#     "$dropterm"="kitty-dropdown";
       "exec-once" = [
       #  "[workspace special silent] foot -a quake"
         #"[workspace special; size 75% 20%;move 12.5% 40] kitty"
+
         (lib.getExe pkgs.waybar)
 	"${pkgs.walker}/bin/walker --gapplication-service"
  	"${lib.getExe pkgs.copyq} --start-server"	
@@ -24,7 +25,9 @@ let
         "${pkgs.blueman}/bin/blueman-applet"
         "${pkgs.networkmanagerapplet}/bin/nm-applet"
 	"${lib.getExe pkgs.hdrop} -d"
-#	(lib.getExe pkgs.hyprpaper)
+	"${pkgs.swayosd}/bin/swayosd-server"
+#	"touch /tmp/HYPRLAND"
+	(lib.getExe pkgs.hyprpaper)
 #	"systemctl start xwayland-ensure --user"
 #	"systemctl start pasystray-ensure --user"
 	(lib.getExe pkgs.pasystray)
@@ -95,10 +98,12 @@ let
         "SUPER+alt,k,exec,konsole"
         "SUPER+alt,s,exec,hyprshot -m region --freeze"
         #"SUPER,grave,exec,bash ~/home-manager/quake.sh"
-        "SUPER,grave,exec,hdrop kitty"
+	"SUPER,t,exec,waveterm"
+        "SUPER,grave,exec,hdrop waveterm"
 	"SUPER+alt,m,exec,flatpak run im.fluffychat.Fluffychat"
         "SUPER+shift,right,movewindow,mon:r"
         "SUPER+shift,left,movewindow,mon:l"
+	"SUPER+shift,V,exec,vesktop"
         "SUPER+alt,V,exec,flatpak run dev.vencord.Vesktop"
         "SUPER,K,exec,hyprctl kill"
         "SUPER,L,exec,librewolf"

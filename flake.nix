@@ -1,25 +1,18 @@
 {
-  description = "My project using personal NUR repository";
+  description = "My flake";
 
   inputs = {
- #   my-home-manager.url = "/home/spiderunderurbed/home-manager/";
-#    nixcord = {
-#      url = "github:kaylorben/nixcord"
-#    };
-#<<<<<<< HEAD
-#=======
-    #sober = {
-    #  url = "https://sober.vinegarhq.org/sober.flatpakref";
-    #  flake = false;
-    #};
-#>>>>>>> cdcb124 (Initial commit)
+#    nix-gaming.url = "github:fufexan/nix-gaming";
     home-manager = {
-      url = "github:nix-community/home-manager";
-      inputs.nixpkgs.follows = "nixpkgs";
+       url = "github:nix-community/home-manager";
+       inputs.nixpkgs.follows = "nixpkgs";
     };
-  nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-  stable.url = "github:NixOS/nixpkgs/nixos-24.11";
-  #secondary.url = "github:NixOS/nixpkgs/nixos-24.11";
+    hm-inputs.url = "/home/spiderunderurbed/home-manager";
+    hyprland = {
+      url = "github:hyprwm/Hyprland";
+    };
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    stable.url = "github:NixOS/nixpkgs/nixos-24.11";
     auto-cpufreq = {
       url = "github:AdnanHodzic/auto-cpufreq";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -32,21 +25,16 @@
       url = "github:edolstra/flake-compat";
       flake = false;
     };
-#    nix-revsocks.url = "github:SpiderUnderUrBed/nix-revsocks";
-#    plasma-manager = {
-#      url = "github:pjones/plasma-manager";
-#      inputs.nixpkgs.follows = "nixpkgs";
-#      inputs.home-manager.follows = "home-manager";
-#    };
-#    sublimation.url = "github:SpiderUnderUrBed/sublimation";
+    
     nix-software-center.url = "github:snowfallorg/nix-software-center";
     arion = {
       url = "github:hercules-ci/arion";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-#    nix-flatpak.url = "github:gmodena/nix-flatpak";
+#    nixos-cachyos-kernel.url = "github:drakon64/nixos-cachyos-kernel";
+    chaotic.url = "github:chaotic-cx/nyx/nyxpkgs-unstable";
     nix-flatpak.url = "github:gmodena/nix-flatpak";
-#    nix-flatpak.url = "github:gmodena/nix-flatpak?rev=b4613e797b1306311a675782d886475f8d18bf68";
+
  };
 
   outputs = { 
@@ -55,91 +43,118 @@
     auto-cpufreq, 
     envycontrol, 
     arion, 
-    stable,
-    #home-manager, 
+
     nix-flatpak, 
-   # secondary,
-   # plasma-manager, 
+#    nix-gaming,
+
+    chaotic,
     nix-software-center, 
     flake-compat, 
     home-manager,
-   # nix-revsocks, 
+    hyprland,   
     lanzaboote, 
+    hm-inputs,
     ... 
   } @ inputs :
   let
+#    home-setup = builtins.getFlake "/home/spiderunderurbed/home-manager"; 
+#    extraSpecialArgs = hm-inputs.outputs.extraSpecialArgs;
     system = "x86_64-linux";
     pkgs = nixpkgs.legacyPackages.${system};
     lib = nixpkgs.lib;
-#    flakeDir = "/etc/nixos";
+    gitCredentialManager = import ./spiderunderurbed/gcm.nix {
+#        inherit pkgs;
+        pkgs = pkgs;
+        lib = pkgs.lib;
+        stdenv = pkgs.stdenv;
+        fetchFromGitHub = pkgs.fetchFromGitHub;
+        dpkg = pkgs.dpkg;
+        dotnet-sdk = pkgs.dotnet-sdk;
+        buildDotnetModule = pkgs.buildDotnetModule;
+        dotnetCorePackages = pkgs.dotnetCorePackages;
+        xorg = pkgs.xorg;
+       # libICE = pkgs.libICE;
+       # libSM = pkgs.libSM;
+        fontconfig = pkgs.fontconfig;
+        libsecret = pkgs.libsecret;
+        git = pkgs.git;
+        git-credential-manager = pkgs.git-credential-manager;
+        mkShell = pkgs.mkShell;
+    };
+      hydenixConfig = import ./spiderunderurbed/hydenix/config.nix;
+      configLocation = "./";
+      netsecrets = builtins.getFlake "/home/spiderunderurbed/projects/net-secrets";
+      #hm-lib = home-manager.lib;
+      hm-modules = [
+#        hm-inputs.inputs.sublimation.homeManagerModules.sublimation
+#        hm-inputs.inputs.nixcord.homeManagerModules.nixcord
+      ];
+      extraSpecialArgs = {
+          inherit netsecrets hydenixConfig gitCredentialManager hm-modules configLocation home-manager; inputs = hm-inputs;
+      };
   in
   {
     nixosConfigurations.daspidercave = nixpkgs.lib.nixosSystem {
       inherit system;
-#      nixpkgs.overlays = [ final: prev: {
-#        extraSpecialArgs = {
-#          inherit inputs;  # Pass inputs as extraSpecialArgs
-#        };
-#      }];
-#       nixpkgs.overlays = [
-#         (final: prev: {
-#           extraSpecialArgs = {
-#            inherit inputs;  # Pass inputs as extraSpecialArgs
-#          };
-#         })
-#       ];
 
- #     imports = [
-#       (import ./flatpak.nix { inherit inputs })
-#      ];
-      specialArgs = { inherit inputs; };
+      specialArgs = { 
+	inherit 
+	inputs 
+	netsecrets; 
+	#nix-gaming;
+      };
+# // extraSpecialArgs;
       modules = [
         lanzaboote.nixosModules.lanzaboote
         auto-cpufreq.nixosModules.default
+	chaotic.nixosModules.default
+	#nixos-cachyos-kernel.nixosModules.default
+	#home-setup.nixosConfigurations.spiderunderurbed
+#        home-setup.homeConfigurations.spiderunderurbed
         ./vfio.nix
         ./configuration.nix
         ./boot.nix
-        #./flatpak.nix
+
         ./registry.nix
         ./flatpak.nix
-        #(import ./flatpak.nix { inherit lib pkgs inputs; }) 
-#       (import ./registry.nix { inherit lib pkgs inputs config; })
-#               extraSpecialArgs = {
-#                       inherit inputs;
-#               }
-                #inherit inputs; 
-#       })
-#<<<<<<< HEAD
-#        home-manager.nixosModules.home-manager
-#        {
-#          home-manager.useGlobalPkgs = true;
-#          home-manager.useUserPackages = true;
-#        }
-#=======
+
         nix-flatpak.nixosModules.nix-flatpak
-        home-manager.nixosModules.home-manager
+        #home-manager.nixosModules.home-manager
+	netsecrets.nixosModules.default
         {
-          home-manager.useGlobalPkgs = true;
-          home-manager.useUserPackages = true;
+          #home-manager.useGlobalPkgs = true;
+          #home-manager.useUserPackages = true;
+#          home-manager.sharedModules = [
+#		  hm-inputs.inputs.walker.homeManagerModules.default
+ #                 hm-inputs.inputs.nixcord.homeManagerModules.nixcord
+#		  hm-inputs.inputs.sublimation.homeManagerModules.sublimation
+#		  #hm-inputs.inputs.walker
+##        hm-inputs.inputs.nixcord.homeManagerModules.nixcord
+# 
+#         ];
+	 # home-manager.extraSpecialArgs = extraSpecialArgs;
+	 # home-manager.users.spiderunderurbed = { pkgs, ... }: {		
+	#	#inherit specialArgs;
+	#	#inherit extraSpecialArgs; 
+	#	imports = [
+	#	  	./spiderunderurbed/home.nix
+	#		#(import ./spiderunderurbed/home.nix {})
+	#	];
+	#  };
         }
-#>>>>>>> cdcb124 (Initial commit)
+
         {
-          #environment.etc."flake.lock".source = "${flakeDir}/flake.lock";
+#	  imports = [ home-setup.homeConfigurations ];
+	  imports = [ 
+	#	spider-config
+	  ];
           environment.systemPackages = with pkgs; [
             envycontrol.packages.${system}.default
           ];
-  #        #boot.loader.systemd-boot.enable = pkgs.lib.mkForce false;
- #         boot.lanzaboote = {
-#           enable = false;
- #           #enable = true;
- #           pkiBundle = "/etc/secureboot";
-#          };
+
         }
       ];
     };
   };
 }
-#<<<<<<< HEAD
 
-#=======
-#>>>>>>> cdcb124 (Initial commit)

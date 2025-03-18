@@ -52,7 +52,7 @@ in
 	#{ appId = "moe.launcher.an-anime-game-launcher"; origin = "gol"; }
 #=======
 	{ flatpakref = "file:///home/spiderunderurbed/sober.flatpakref"; sha256="54546f6e843b219c180d0bc47168a63ae9e8eef223fb9133b4ebf1087bf048de"; }
-	#{ flatpakref = "file:///home/spiderunderurbed/org.gnome.Snapshot.flatpakref"; sha256="7f989f68294ccd11ec61c53872092e2bf7fbb6cef9fcb7ac453ca8f62398da9a"; }
+	{ flatpakref = "file:///home/spiderunderurbed/org.gnome.Snapshot.flatpakref"; sha256="7f989f68294ccd11ec61c53872092e2bf7fbb6cef9fcb7ac453ca8f62398da9a"; }
 #	{ appId = "org.vinegarhq.Sober"; origin = "sober"; }
 #	{ appId = "moe.launcher.the-honkers-railway-launcher"; origin = "gol"; }
 	#{ appId = "moe.launcher.an-anime-game-launcher"; origin = "gol"; }
@@ -60,11 +60,13 @@ in
 #	"org.emilien.Password"
 	#"com.bktus.gpgfrontend"
 	#"net.ankiweb.Anki"
+	"com.discordapp.Discord"
+	"org.prismlauncher.PrismLauncher"
 	"org.openscad.OpenSCAD"
-	"org.gnome.Snapshot"
+	#"org.gnome.Snapshot"
 	#"org.gnome.Cheese"
 	"io.appflowy.AppFlowy"
-	"org.vinegarhq.Vinegar"
+	#"org.vinegarhq.Vinegar"
 	"chat.simplex.simplex"
 	"net.minetest.Minetest"
 	"io.github.mpobaschnig.Vaults"
@@ -72,7 +74,7 @@ in
 	#"com.github.phase1geo.minder"
 	"com.belmoussaoui.Decoder"
 	#"io.gitlab.librewolf-community"
-	"dev.vencord.Vesktop"
+	#"dev.vencord.Vesktop"
 	"com.rafaelmardojai.Blanket"
 	"io.gitlab.idevecore.Pomodoro"
 	"org.inkscape.Inkscape"
@@ -80,6 +82,7 @@ in
 	"org.signal.Signal"
 	"org.kde.knights"
 #	"org.gnome.Chess"
+	"me.proton.Mail"
 	"com.opera.Opera"
 #c	"org.gnome.Calendar"
 #	"org.nickvision.tubeconverter"
@@ -113,6 +116,8 @@ in
 #=======
 #	"net.brinkervii.grapejuice"
 #	"org.vinegarhq.Vinegar"
+	#"app.zen_browser.zen"
+	#"net.blockbench.Blockbench"
 	"org.kde.kclock"
 	"io.appflowy.AppFlowy"
 	"org.kde.kcolorchooser"
