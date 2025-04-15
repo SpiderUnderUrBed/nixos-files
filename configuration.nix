@@ -87,44 +87,56 @@ arion = pkgs.writeShellApplication {
     builtins.concatStringsSep sep (map (x: f x + "\n") list);
   secretFile = config.secrets.secret1.file;
     
-    echoService = pkgs.writeShellScript "netsecrets-echo" ''
-      echo "Secret file content:"
-      cat ${secretFile}
-    '';
+    #echoService = pkgs.writeShellScript "netsecrets-echo" ''
+    #  echo "Secret file content:"
+    #  cat ${secretFile}
+    #'';
 in 
 
 {
 nixpkgs.config.allowUnsupportedSystem = true;
 nixpkgs.overlays = [
+  (final: prev: {
+    discord = prev.discord.overrideAttrs (previousAttrs: {
+      installPhase =
+        previousAttrs.installPhase
+        + ''
+          sed -i'.backup' -e 's/,"WebRTCPipeWireCapturer"/,"LebRTCPipeWireCapturer"/' $out/lib/discord/resources/app.asar
+        '';
+    });
+  })
+];
+
+#nixpkgs.overlays = [
 #pinnedKde
 
-];
+#];
 
 aagl.enableNixpkgsReleaseBranchCheck = false;
 
-netsecrets = {
-  enable = true;
-  requesting = {
-    server = "127.0.0.1";
-    password = "your_password";
-    port = "8080";
-    priority = 0;
-    request_secrets = ["secret1" "enableecho"];
-  };
+#netsecrets = {
+#  enable = true;
+#  requesting = {
+#    server = "127.0.0.1";
+#    password = "your_password";
+#    port = "8080";
+#    priority = 0;
+#    request_secrets = ["secret1" "enableecho"];
+#  };
 
-  authorize = {
-    ipOrRange = ["192.168.68.0/24" "127.0.0.1/24"];
-    password = "your_password";
-    server = "127.0.0.1";
-    port = "8080";
-    secrets = {
-      secret1 = "/path/to/secret1";
-      enableecho = "true";
-      #secret2 = "/path/to/secret2";
-    };
-    verbose = true;
-  };
-};
+#  authorize = {
+#    ipOrRange = ["192.168.68.0/24" "127.0.0.1/24"];
+#    password = "your_password";
+#    server = "127.0.0.1";
+#    port = "8080";
+#    secrets = {
+#      secret1 = "/path/to/secret1";
+#      enableecho = "true";
+#      #secret2 = "/path/to/secret2";
+#    };
+#    verbose = true;
+#  };
+#};
 
 
 systemd = 
@@ -165,16 +177,16 @@ user.services = {
 };
 #"hyprpaper-ensure"
 };
-  services.netsecrets-echo = {
-    description = "Echo NetSecrets Content";
-    wantedBy = [ "multi-user.target" ];
-    enable = config.secrets.enableecho == "true";
-    serviceConfig = {
-      ExecStart = echoService;
-      Restart = "no";
-      User = "root";
-    };
-  };
+ # services.netsecrets-echo = {
+ #   description = "Echo NetSecrets Content";
+ #   wantedBy = [ "multi-user.target" ];
+ #   enable = config.secrets.enableecho == "true";
+ #   serviceConfig = {
+ #     ExecStart = echoService;
+ #     Restart = "no";
+ #     User = "root";
+ #   };
+ # };
 };
 services = {
 
@@ -311,12 +323,17 @@ environment.systemPackages =
     xwayland-satellite
  ]) ++
   [
+	tea
+	minikube
+	floorp
+	realvnc-vnc-viewer
+#	ranger
 #	ca-certificates
 	asciinema
 	mesa-demos
 	waveterm
 	dig
-	specialArgs.netsecrets.packages.${system}.netsecrets
+	#specialArgs.netsecrets.packages.${system}.netsecrets
 	wl-clipboard
 	rust-analyzer
 #	zed-editor
@@ -352,7 +369,7 @@ environment.systemPackages =
         efibootmgr
         anki
         cryfs
-        sherlock
+        #sherlock
         shell-gpt
         feh
 
@@ -418,7 +435,7 @@ environment.systemPackages =
         rage
         onlyoffice-bin
 
-        vesktop
+        #vesktop
 
         thefuck
         zoxide
@@ -658,7 +675,11 @@ services.openssh = {
     export GPG_TTY="$(tty)"
   '';
   environment.variables = rec {
-    KWIN_DRM_DEVICES="/dev/dri/card0:/dev/dri/card1";
+    #OPENSSL_LIB_DIR = "${pkgs.openssl.out}/lib";
+    #OPENSSL_INCLUDE_DIR = "${pkgs.openssl.dev}/include";
+    #PKG_CONFIG_PATH = "${pkgs.openssl.dev}/lib/pkgconfig";
+  #  PKG_CONFIG_PATH="${pkgs.openssl.dev}/lib/pkgconfig";
+    #KWIN_DRM_DEVICES="/dev/dri/card0:/dev/dri/card1";
   };
   environment.etc = {
        #"nixos/test" = {

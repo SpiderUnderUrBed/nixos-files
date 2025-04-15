@@ -83,14 +83,21 @@
     };
       hydenixConfig = import ./spiderunderurbed/hydenix/config.nix;
       configLocation = "./";
-      netsecrets = builtins.getFlake "/home/spiderunderurbed/projects/net-secrets";
+     # netsecrets = builtins.getFlake "/home/spiderunderurbed/projects/net-secrets";
       #hm-lib = home-manager.lib;
       hm-modules = [
 #        hm-inputs.inputs.sublimation.homeManagerModules.sublimation
 #        hm-inputs.inputs.nixcord.homeManagerModules.nixcord
       ];
       extraSpecialArgs = {
-          inherit netsecrets hydenixConfig gitCredentialManager hm-modules configLocation home-manager; inputs = hm-inputs;
+          inherit 
+		#netsecrets 
+		hydenixConfig 
+		gitCredentialManager 
+		hm-modules 
+		configLocation 
+		home-manager; 
+		inputs = hm-inputs;
       };
   in
   {
@@ -99,8 +106,8 @@
 
       specialArgs = { 
 	inherit 
-	inputs 
-	netsecrets; 
+	inputs; 
+#	netsecrets; 
 	#nix-gaming;
       };
 # // extraSpecialArgs;
@@ -120,7 +127,7 @@
 
         nix-flatpak.nixosModules.nix-flatpak
         #home-manager.nixosModules.home-manager
-	netsecrets.nixosModules.default
+#	netsecrets.nixosModules.default
         {
           #home-manager.useGlobalPkgs = true;
           #home-manager.useUserPackages = true;
