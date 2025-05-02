@@ -323,8 +323,15 @@ environment.systemPackages =
     xwayland-satellite
  ]) ++
   [
+	lsof
+	podman
+	rpi-imager
+	#sshfs
+	kubectl
 	tea
-	minikube
+	k3d
+	k3s
+	#minikube
 	floorp
 	realvnc-vnc-viewer
 #	ranger
@@ -378,13 +385,13 @@ environment.systemPackages =
         avml
         volatility3
         wget
-        bsd-finger
+#        bsd-finger
         pnpm
 
         brave
         google-chrome
         home-manager
-        swift
+#        swift
 #       xclicker
         lutris-free
         android-studio
@@ -392,7 +399,7 @@ environment.systemPackages =
         wine
         nmap
 
-#       heroic
+        heroic
         gcc
         sl
         cmatrix
@@ -584,6 +591,9 @@ enable = false;
    };
   };
   DVfio.configuration = {
+	systemd.tmpfiles.rules = [
+	  "f /tmp/enable-vfio-switch 0644 spiderunderurbed users -"
+	];
         environment.variables = {
           KWIN_DRM_DEVICES = lib.mkForce "";
         };
@@ -692,6 +702,7 @@ services.openssh = {
       "jdks/8".source = "${pkgs.openjdk8}/bin";
   };
   programs = {
+  fuse.userAllowOther = true;
   gamemode.enable = true;
   uwsm = {
     enable = true;
@@ -732,6 +743,10 @@ services.openssh = {
           "browser.tabs.groups.enabled" = true;
         };
         policies.ExtensionSettings = {
+	       "{20255b4d-cc15-4ca1-98e6-e63426621e75}" = {
+		    install_url = "ttps://addons.mozilla.org/firefox/downloads/latest/scrollsave/latest.xpi";
+		    installation_mode = "force_installed";
+		};
                "uBlock0@raymondhill.net" = {
                     install_url = "https://addons.mozilla.org/firefox/downloads/latest/ublock-origin/latest.xpi";
                     installation_mode = "force_installed";

@@ -84,6 +84,12 @@ in
             exit 0
           fi
 
+          VFIO_FLAG="/tmp/enable-vfio-switch"
+  	  if [ ! -f "$VFIO_FLAG" ]; then
+    	    echo "VFIO flag not found, skipping GPU passthrough steps."
+    	    exit 0
+  	  fi
+
           if [ "$OPERATION" == "prepare" ]; then
               #systemctl stop sddm.service
               systemctl stop display-manager.service
