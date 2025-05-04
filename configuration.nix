@@ -323,6 +323,7 @@ environment.systemPackages =
     xwayland-satellite
  ]) ++
   [
+	kdePackages.xwaylandvideobridge
 	lsof
 	podman
 	rpi-imager
