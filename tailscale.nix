@@ -37,7 +37,8 @@ buildGo124Module rec {
   patches = [
     (fetchpatch {
       url = "https://github.com/tailscale/tailscale/commit/327ea19746e7b0431a17562496dd0e708ab99abc.patch";
-      hash = "sha256-QWnx92ANpbdtcP0y9s7Q8nJ/Zmqadw5kXAvw3/JXvu8=";
+      hash = "sha256-rbTYMUTDClg3MAFew3bVbe/7MTble3HglxauHqQ9SHE=";
+      #sha256-QWnx92ANpbdtcP0y9s7Q8nJ/Zmqadw5kXAvw3/JXvu8=
     })
   ];
 

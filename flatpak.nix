@@ -61,7 +61,7 @@ in
 	#"com.bktus.gpgfrontend"
 	#"net.ankiweb.Anki"
 	#"com.discordapp.DiscordCanary"
-	"com.discordapp.Discord"
+	#"com.discordapp.Discord"
 	"org.vinegarhq.Sober"
 	"org.prismlauncher.PrismLauncher"
 	"org.openscad.OpenSCAD"

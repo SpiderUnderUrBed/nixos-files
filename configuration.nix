@@ -96,15 +96,15 @@ in
 {
 nixpkgs.config.allowUnsupportedSystem = true;
 nixpkgs.overlays = [
-  (final: prev: {
-    discord = prev.discord.overrideAttrs (previousAttrs: {
-      installPhase =
-        previousAttrs.installPhase
-        + ''
-          sed -i'.backup' -e 's/,"WebRTCPipeWireCapturer"/,"LebRTCPipeWireCapturer"/' $out/lib/discord/resources/app.asar
-        '';
-    });
-  })
+#  (final: prev: {
+#    discord = prev.discord.overrideAttrs (previousAttrs: {
+#      installPhase =
+#        previousAttrs.installPhase
+#        + ''
+#          sed -i'.backup' -e 's/,"WebRTCPipeWireCapturer"/,"LebRTCPipeWireCapturer"/' $out/lib/discord/resources/app.asar
+#        '';
+#    });
+#  })
 ];
 
 #nixpkgs.overlays = [
@@ -323,7 +323,10 @@ environment.systemPackages =
     xwayland-satellite
  ]) ++
   [
-	kdePackages.xwaylandvideobridge
+#	xdg-desktop-portal
+	jellyfin-media-player
+	discord
+#	kdePackages.xwaylandvideobridge
 	lsof
 	podman
 	rpi-imager
@@ -474,8 +477,8 @@ environment.systemPackages =
         pcscliteWithPolkit.out
         pcsclite  
         gnupg
-
-        yakuake 
+	kdePackages.yakuake
+        #yakuake 
         #config.services.headscale.package  
         #nginx 
         docker-compose
@@ -910,6 +913,11 @@ services.openssh = {
     };
   };
 
+ # xdg.portal = {
+ #   enable = true;
+ #   extraPortals = [ pkgs.kdePackages.xdg-desktop-portal-kde ];
+ # };
+
   services.xserver = {
     layout = "nz";
     xkbVariant = "";
@@ -990,7 +998,10 @@ services.openssh = {
         ];
     packages = with pkgs; [
       firefox
-      kate
+      kdePackages.kate
+      #kdePackages.konsole
+      #libsForQt5.kate
+      #kate
 
     ];
   };
