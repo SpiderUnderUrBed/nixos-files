@@ -31,8 +31,14 @@
       url = "github:hercules-ci/arion";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-#    nixos-cachyos-kernel.url = "github:drakon64/nixos-cachyos-kernel";
-    chaotic.url = "github:chaotic-cx/nyx/nyxpkgs-unstable";
+    #nixos-cachyos-kernel.url = "github:drakon64/nixos-cachyos-kernel";
+    #chaotic.url = "github:chaotic-cx/nyx/nyxpkgs-unstable";
+    chaotic = {
+      url = "github:chaotic-cx/nyx/nyxpkgs-unstable";
+      #rev = "2ab29fd77896a69a77bb98fd792fb6102f44b449";
+      #narHash = "sha256-aYDO6La5fuG5xzVYBFfoheWukwggcyh3LlfI0p+RnHw=";
+    };
+
     nix-flatpak.url = "github:gmodena/nix-flatpak";
 
  };

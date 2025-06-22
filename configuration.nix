@@ -23,11 +23,14 @@ let
   };
 
 #unstablePkgs = import (fetchTarball "https://github.com/NixOS/nixpkgs/archive/nixos-unstable.tar.gz") {};
-baseconfig = { 
-	allowUnfree = true; 
+  baseconfig = { 
+  	allowUnfree = true; 
 #	expressvpn.enable = true;
-};
-stable = import inputs.stable { config = baseconfig; };
+  };
+  stable = import inputs.stable { config = baseconfig; };
+
+ # cachyos_kernel =  pkgs.callPackage ./linux-cachyos { };
+#pkgs.recurseIntoAttrs (pkgs.linuxPackagesFor pkgs.callPackage ./linux-cachyos);
 #old = import inputs.old { config = baseconfig; };
 #secondary = import inputs.secondary { config = baseconfig; };
 #baseconfig = { allowUnfree = true; };
@@ -105,6 +108,31 @@ nixpkgs.overlays = [
 #        '';
 #    });
 #  })
+   #(final: prev: {
+   #   linuxPackages_cachyos = prev.linuxPackagesFor (import ./linux-cachyos { 
+   #     inherit final prev;
+   #   });
+   #})
+   #(final: prev: {
+   #  linuxPackages_cachyos = prev.linuxPackagesFor (prev.callPackage ./linux-cachyos { });
+   #})
+#(final: prev:
+#  let
+#    cachyos_kernels = import ./linux-cachyos { inherit final prev; };
+#  in {
+#    linuxPackages_cachyos = prev.linuxPackagesFor cachyos_kernels.cachyos;
+#  }
+#)
+  #(final: prev:
+  #  let
+  #    cachyos_kernels = import ./linux-cachyos {
+  #      inherit final prev;
+  #      configPath = ./config-nix/cachyos.x86_64-linux.nix; # Pass configPath explicitly
+  #    };
+  #  in {
+  #    linuxPackages_cachyos = prev.linuxPackagesFor cachyos_kernels.cachyos;
+  #  }
+  #)
 ];
 
 #nixpkgs.overlays = [
@@ -199,10 +227,9 @@ security.pki.certificates = [ ''
 '' ];
 networking = { 
 
-interfaces."enp46s0".wakeOnLan = {
-
-enable = true;
-};
+#interfaces."enp46s0".wakeOnLan = {
+#enable = true;
+#};
 nameservers = [
 "8.8.8.8" 
 
@@ -315,7 +342,7 @@ environment.systemPackages =
   (lib.optionals secondaryEnable [
     #pyenv
     bc
-    jq
+    #jq
     blueman
     fortune 
     pavucontrol
@@ -323,6 +350,11 @@ environment.systemPackages =
     xwayland-satellite
  ]) ++
   [
+	ncdu
+	jq
+	cargo-watch
+	popsicle
+	#variety
 #	xdg-desktop-portal
 	jellyfin-media-player
 	discord
@@ -337,7 +369,8 @@ environment.systemPackages =
 	k3s
 	#minikube
 	floorp
-	realvnc-vnc-viewer
+	tigervnc
+#	realvnc-vnc-viewer
 #	ranger
 #	ca-certificates
 	asciinema
@@ -445,10 +478,10 @@ environment.systemPackages =
         logseq
         rage
         onlyoffice-bin
-
         #vesktop
+        #thefuck
 
-        thefuck
+	pay-respects
         zoxide
         chezmoi
         xorg.xhost
@@ -466,7 +499,8 @@ environment.systemPackages =
         yubikey-agent
         yubikey-touch-detector
         age-plugin-yubikey
-        yubikey-personalization-gui
+        #yubikey-personalization-gui
+	yubioath-flutter
         yubikey-manager
 
         godot3
@@ -502,7 +536,7 @@ environment.systemPackages =
 
 virtualisation = {
 docker.enable = true;
-waydroid.enable = true;
+waydroid.enable = false;
 };
 
 virtualisation.oci-containers = {
@@ -606,23 +640,23 @@ enable = false;
         '';
   };
   Battery.configuration = {
-    system.nixos.tags = [ "Battery" ];
-    boot.extraModprobeConfig = ''
-  blacklist nouveau
-  options nouveau modeset=0
-'';
+    	system.nixos.tags = [ "Battery" ];
+    	boot.extraModprobeConfig = ''
+  		blacklist nouveau
+  		options nouveau modeset=0
+    	'';
 
-services.udev.extraRules = ''s
+	#services.udev.extraRules = ''s
 
-  ACTION=="add", SUBSYSTEM=="pci", ATTR{vendor}=="0x10de", ATTR{class}=="0x0c0330", ATTR{power/control}="auto", ATTR{remove}="1"
+  	#	ACTION=="add", SUBSYSTEM=="pci", ATTR{vendor}=="0x10de", ATTR{class}=="0x0c0330", ATTR{power/control}="auto", ATTR{remove}="1"
 
-  ACTION=="add", SUBSYSTEM=="pci", ATTR{vendor}=="0x10de", ATTR{class}=="0x0c8000", ATTR{power/control}="auto", ATTR{remove}="1"
+  	#	ACTION=="add", SUBSYSTEM=="pci", ATTR{vendor}=="0x10de", ATTR{class}=="0x0c8000", ATTR{power/control}="auto", ATTR{remove}="1"
 
-  ACTION=="add", SUBSYSTEM=="pci", ATTR{vendor}=="0x10de", ATTR{class}=="0x040300", ATTR{power/control}="auto", ATTR{remove}="1"
+  	#	ACTION=="add", SUBSYSTEM=="pci", ATTR{vendor}=="0x10de", ATTR{class}=="0x040300", ATTR{power/control}="auto", ATTR{remove}="1"
 
-  ACTION=="add", SUBSYSTEM=="pci", ATTR{vendor}=="0x10de", ATTR{class}=="0x03[0-9]*", ATTR{power/control}="auto", ATTR{remove}="1"
-'';
-boot.blacklistedKernelModules = [ "nouveau" "nvidia" "nvidia_drm" "nvidia_modeset" ];
+  	#	ACTION=="add", SUBSYSTEM=="pci", ATTR{vendor}=="0x10de", ATTR{class}=="0x03[0-9]*", ATTR{power/control}="auto", ATTR{remove}="1"
+	#'';
+	boot.blacklistedKernelModules = [ "nouveau" "nvidia" "nvidia_drm" "nvidia_modeset" ];
   };
 };
 
@@ -648,7 +682,10 @@ services.udev.packages = [ pkgs.yubikey-personalization pkgs.libu2f-host ];
   
   #boot.`kernelParams = [ "
   #boot.blacklistedKernelModules = [ "nouveau" ];
-  boot.kernelPackages = pkgs.linuxPackages_cachyos;
+  boot.kernelPackages = pkgs.linuxPackages_cachyos; 
+#pkgs.linuxPackages_latest;
+#cachyos_kernel;
+  #pkgs.linuxPackages_cachyos;
 #with pkgs; linuxPackagesFor linuxPackages_cachyos;
 #       pkgs.linuxPackages_latest;
 #        stable.linuxPackages_zen;
@@ -657,24 +694,26 @@ services.udev.packages = [ pkgs.yubikey-personalization pkgs.libu2f-host ];
 
     [  
         acermodule  
-        config.boot.kernelPackages.v4l2loopback.out
+        #config.boot.kernelPackages.v4l2loopback.out
     ];
   boot.tmp = {
         cleanOnBoot = true; 
         useTmpfs = true;
         tmpfsSize = "100%";
   };
+   boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
+
    boot.kernelModules = [
 
     "facer" "wmi" "sparse-keymap" "video" 
 
-    "v4l2loopback"
+    #"v4l2loopback"
 
     "snd-aloop"
   ];
 
   boot.extraModprobeConfig = ''
-   options v4l2loopback exclusive_caps=1 video_nr=10 card_label="Virtual Camera"
+   #options v4l2loopback exclusive_caps=1 video_nr=10 card_label="Virtual Camera"
   '';
 
 services.openssh = {
@@ -792,6 +831,10 @@ services.openssh = {
 		    install_url = "https://addons.mozilla.org/firefox/downloads/latest/pwas-for-firefox/latest.xpi";
 		    installation_mode = "force_installed";
 		};
+		#"627c98c5-8ca2-4bdc-8c21-4739f2ccdedb" = {
+		#    install_url = "https://addons.mozilla.org/firefox/downloads/latest/youtube-recommended-videos/latest.xpi";
+		#    installation_mode = "force_installed";
+		#};
           };
     };
 
@@ -848,7 +891,7 @@ services.openssh = {
   };
 
   virtualisation.virtualbox.host.enable = true;
-   users.extraGroups.vboxusers.members = [ "user-with-access-to-virtualbox" ];
+  users.extraGroups.vboxusers.members = [ "user-with-access-to-virtualbox" ];
   imports =
    [ 
 	#specialArgs.nix-gaming.nixosModules.platformOptimizations

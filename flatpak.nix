@@ -105,7 +105,7 @@ in
 	"org.kde.kdenlive"
 	"im.fluffychat.Fluffychat"
 	"org.kde.krita"
-#	"com.system76.Popsicle"
+	#"com.system76.Popsicle"
 	"xyz.xclicker.xclicker"
         "com.github.tchx84.Flatseal"
         "com.obsproject.Studio" 
