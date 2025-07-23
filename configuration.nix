@@ -247,7 +247,7 @@ nameservers = [
       });
   '';
 services.tailscale = {
-package = pkgs.callPackage ./tailscale.nix {};
+package = pkgs.callPackage ./pkgs/tailscale.nix {};
 #package = old.tailscale; 
 enable = true;
 };
@@ -350,10 +350,20 @@ environment.systemPackages =
     xwayland-satellite
  ]) ++
   [
+	#(pkgs.haskellPackages.ghcWithPackages (pkgs: with pkgs; [
+      	#  cabal-install
+	#]))
+	#stack
+	zim
+	fabric-ai
+	#libguestfs
+	immich-cli
+	pipx
 	ncdu
 	jq
 	cargo-watch
 	popsicle
+	(pkgs.callPackage ./pkgs/tuido.nix {})
 	#variety
 #	xdg-desktop-portal
 	jellyfin-media-player
@@ -365,8 +375,9 @@ environment.systemPackages =
 	#sshfs
 	kubectl
 	tea
-	k3d
+	#k3d
 	k3s
+	#transmission_4
 	#minikube
 	floorp
 	tigervnc
@@ -384,6 +395,7 @@ environment.systemPackages =
 	#mysql-workbench
 	#dbeaver-bin
 	wmctrl
+	# maybe put the above package elsewhere
 	sshpass
 	ansible
 #	ansible-galaxy
@@ -404,8 +416,8 @@ environment.systemPackages =
         tree
         php
         alsa-lib
-        pkg-config
-        openssl
+        #pkg-config
+        #openssl
         ollama
         rustup
         tldr
@@ -423,10 +435,10 @@ environment.systemPackages =
         volatility3
         wget
 #        bsd-finger
-        pnpm
+        #pnpm
 
         brave
-        google-chrome
+        #google-chrome
         home-manager
 #        swift
 #       xclicker
@@ -440,12 +452,12 @@ environment.systemPackages =
         gcc
         sl
         cmatrix
-        weston
+        #weston
         
         rustfmt
 
         protonmail-bridge
-        guake
+        #guake
         cloudflared
         vitetris
 
@@ -459,7 +471,7 @@ environment.systemPackages =
         bleachbit
 
         screen
-        stacer
+        #stacer
         xmrig
         monero-gui
         duperemove
@@ -521,8 +533,8 @@ environment.systemPackages =
         gparted 
         htop 
         libfido2 
-        linux-pam 
-        usbutils
+        #linux-pam 
+        #usbutils
         docker
         age
         #hyprshot
@@ -745,6 +757,7 @@ services.openssh = {
       "jdks/8".source = "${pkgs.openjdk8}/bin";
   };
   programs = {
+  adb.enable = true;
   fuse.userAllowOther = true;
   gamemode.enable = true;
   uwsm = {
@@ -756,7 +769,7 @@ services.openssh = {
     };
   };
    thunar = {
-     enable = true;
+     enable = hyprlandEnable && false;
    };
   #hyprland = (hyprlandConfig);
   java = { enable = true; };
@@ -827,10 +840,14 @@ services.openssh = {
                     install_url = "https://addons.mozilla.org/firefox/downloads/latest/grammarly-1/latest.xpi";
                     installation_mode = "force_installed";
                 };
-		"firefoxpwa@filips.si" = {
-		    install_url = "https://addons.mozilla.org/firefox/downloads/latest/pwas-for-firefox/latest.xpi";
+		"{762f9885-5a13-4abd-9c77-433dcd38b8fd}" = {
+		    install_url = "https://addons.mozilla.org/firefox/downloads/latest/return-youtube-dislikes/latest.xpi";
 		    installation_mode = "force_installed";
 		};
+		#"firefoxpwa@filips.si" = {
+		#    install_url = "https://addons.mozilla.org/firefox/downloads/latest/pwas-for-firefox/latest.xpi";
+		#    installation_mode = "force_installed";
+		#};
 		#"627c98c5-8ca2-4bdc-8c21-4739f2ccdedb" = {
 		#    install_url = "https://addons.mozilla.org/firefox/downloads/latest/youtube-recommended-videos/latest.xpi";
 		#    installation_mode = "force_installed";

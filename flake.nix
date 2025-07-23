@@ -107,6 +107,7 @@
       };
   in
   {
+    formatter.${system} = pkgs.nixpkgs-fmt;
     nixosConfigurations.daspidercave = nixpkgs.lib.nixosSystem {
       inherit system;
 
