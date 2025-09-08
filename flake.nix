@@ -163,7 +163,7 @@
 	#	spider-config
 	  ];
           environment.systemPackages = with pkgs; [
-            envycontrol.packages.${system}.default
+            #envycontrol.packages.${system}.default
           ];
 
         }

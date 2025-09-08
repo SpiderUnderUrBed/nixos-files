@@ -78,8 +78,8 @@ arion = pkgs.writeShellApplication {
   '';
 };
 
-    aagl = import (builtins.fetchTarball "https://github.com/ezKEa/aagl-gtk-on-nix/archive/main.tar.gz");
-
+  aagl = import (builtins.fetchTarball "https://github.com/ezKEa/aagl-gtk-on-nix/archive/main.tar.gz");
+#  aagl = import (builtins.fetchTarball "https://github.com/SpiderUnderUrBed/aagl-gtk-on-nix/archive/main.tar.gz");
   nix-software-center = import (pkgs.fetchFromGitHub {
     owner = "snowfallorg";
     repo = "nix-software-center";
@@ -350,6 +350,10 @@ environment.systemPackages =
     xwayland-satellite
  ]) ++
   [
+	git-lfs
+	prismlauncher
+	p7zip
+	duc
 	#(pkgs.haskellPackages.ghcWithPackages (pkgs: with pkgs; [
       	#  cabal-install
 	#]))
@@ -463,7 +467,8 @@ environment.systemPackages =
 
         ettercap
 
-        audacity
+	tenacity
+       # audacity
 #       bottles
 
         vlc
@@ -561,6 +566,10 @@ virtualisation.oci-containers = {
 };
 virtualisation.oci-containers.containers.coweire.image = "cowrie/cowrie:latest";
 virtualisation.oci-containers.containers.coweire.ports = ["22:2222"];
+
+#virtualisation.qemu.options = [
+#  "-device" "virtio-rng-pci"
+#];
 
 hardware.bluetooth.enable = true; 
 hardware.bluetooth.powerOnBoot = true; 
@@ -759,6 +768,7 @@ services.openssh = {
   programs = {
   adb.enable = true;
   fuse.userAllowOther = true;
+  nix-ld.enable = true;
   gamemode.enable = true;
   uwsm = {
     enable = true;
@@ -799,6 +809,11 @@ services.openssh = {
           "browser.tabs.groups.enabled" = true;
         };
         policies.ExtensionSettings = {
+	 	# web browsing journal
+	       #"{8dc8b449-c996-43a7-a045-bba61a8e2595}" = {
+		#    install_url = "https://addons.mozilla.org/firefox/downloads/latest/web-browsing-journal/latest.xpi";
+		#    installation_mode = "force_installed";
+		#};
 	       "{20255b4d-cc15-4ca1-98e6-e63426621e75}" = {
 		    install_url = "ttps://addons.mozilla.org/firefox/downloads/latest/scrollsave/latest.xpi";
 		    installation_mode = "force_installed";
@@ -857,6 +872,7 @@ services.openssh = {
 
     gamescope.enable = true;
     anime-game-launcher.enable = true;
+    anime-games-launcher.enable = true;
     ssh = {
         extraConfig = ''
                 PermitLocalCommand=yes

@@ -52,7 +52,7 @@ in
 	#{ appId = "moe.launcher.an-anime-game-launcher"; origin = "gol"; }
 #=======
 #	{ flatpakref = "file:///home/spiderunderurbed/sober.flatpakref"; sha256="54546f6e843b219c180d0bc47168a63ae9e8eef223fb9133b4ebf1087bf048de"; }
-	{ flatpakref = "file:///home/spiderunderurbed/org.gnome.Snapshot.flatpakref"; sha256="7f989f68294ccd11ec61c53872092e2bf7fbb6cef9fcb7ac453ca8f62398da9a"; }
+#	{ flatpakref = "file:///home/spiderunderurbed/org.gnome.Snapshot.flatpakref"; sha256="7f989f68294ccd11ec61c53872092e2bf7fbb6cef9fcb7ac453ca8f62398da9a"; }
 #	{ appId = "org.vinegarhq.Sober"; origin = "sober"; }
 #	{ appId = "moe.launcher.the-honkers-railway-launcher"; origin = "gol"; }
 	#{ appId = "moe.launcher.an-anime-game-launcher"; origin = "gol"; }
@@ -62,6 +62,10 @@ in
 	#"net.ankiweb.Anki"
 	#"com.discordapp.DiscordCanary"
 	#"com.discordapp.Discord"
+	#"page.codeberg.libre_menu_editor.LibreMenuEditor"
+	"org.kde.kmymoney"
+	"com.prusa3d.PrusaSlicer"
+	"com.ultimaker.cura"
 	"org.freefilesync.FreeFileSync"
 	"org.vinegarhq.Sober"
 	"org.prismlauncher.PrismLauncher"
