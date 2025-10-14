@@ -1,9 +1,5 @@
-{
-  config,
-  pkgs,
-  lib,
-  ...
-}: let
+{ config, pkgs, lib, ... }:
+let
   cfg = config.modules.usrEnv.desktops.hyprland;
   # inherit (inputs.hyprsplit.packages.${pkgs.system}) hyprsplit;
   inherit (lib) mkIf mkDefault;
@@ -17,7 +13,7 @@ in {
     ./nixos-module.nix
   ];
   # we disable the default hyprland module
-  disabledModules = ["programs/hyprland.nix"];
+  disabledModules = [ "programs/hyprland.nix" ];
 
   config = mkIf cfg.enable {
     programs.hyprland = {
@@ -33,16 +29,10 @@ in {
     # xdg Portal
     xdg.portal = {
       enable = true;
-      configPackages = mkDefault [
-        pkgs.xdg-desktop-portal-hyprland
-      ];
-      extraPortals = [
-        pkgs.xdg-desktop-portal-gtk
-        pkgs.xdg-desktop-portal-hyprland
-      ];
-      config = {
-        common.default = ["gtk" "hyprland"];
-      };
+      configPackages = mkDefault [ pkgs.xdg-desktop-portal-hyprland ];
+      extraPortals =
+        [ pkgs.xdg-desktop-portal-gtk pkgs.xdg-desktop-portal-hyprland ];
+      config = { common.default = [ "gtk" "hyprland" ]; };
     };
   };
 }

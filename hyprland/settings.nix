@@ -1,8 +1,5 @@
-{
-  config,
-  lib,
-  ...
-}: let
+{ config, lib, ... }:
+let
   inherit (config.modules.other.system) username;
   inherit (config.modules.system.hardware) monitors;
   inherit (lib) mapAttrsToList;
@@ -18,18 +15,15 @@ in {
         # Monitor config
         # Thanks Poz for inspiration, using an attrSet is actually much smarter
         # than using a normal list.
-        monitor =
-          mapAttrsToList (
-            name: m: let
-              w = toString m.resolution.x;
-              h = toString m.resolution.y;
-              refreshRate = toString m.refreshRate;
-              x = toString m.position.x;
-              y = toString m.position.y;
-              scale = toString m.scale;
-            in "${name},${w}x${h}@${refreshRate},${x}x${y},${scale}"
-          )
-          monitors;
+        monitor = mapAttrsToList (name: m:
+          let
+            w = toString m.resolution.x;
+            h = toString m.resolution.y;
+            refreshRate = toString m.refreshRate;
+            x = toString m.position.x;
+            y = toString m.position.y;
+            scale = toString m.scale;
+          in "${name},${w}x${h}@${refreshRate},${x}x${y},${scale}") monitors;
 
         # Input settings
         input = {
@@ -42,9 +36,7 @@ in {
           repeat_rate = 60;
           repeat_delay = 200;
 
-          touchpad = {
-            disable_while_typing = true;
-          };
+          touchpad = { disable_while_typing = true; };
         };
 
         general = {

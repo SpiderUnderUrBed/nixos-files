@@ -1,8 +1,5 @@
-{
-  config,
-  pkgs,
-  ...
-}: let
+{ config, pkgs, ... }:
+let
   inherit (config.modules.style) cursor;
   inherit (builtins) toString;
 in {

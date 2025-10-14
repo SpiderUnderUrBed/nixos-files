@@ -1,79 +1,54 @@
-{
-  config,
-  lib,
-  pkgs,
-  ...
-}: let
+{ config, lib, pkgs, ... }:
+let
   cfg = config.programs.hyprland;
 
-  toHyprconf = {
-    attrs,
-    indentLevel ? 0,
-    importantPrefixes ? ["$"],
-  }: let
-    inherit
-      (lib)
-      all
-      concatMapStringsSep
-      concatStrings
-      concatStringsSep
-      filterAttrs
-      foldl
-      generators
-      hasPrefix
-      isAttrs
-      isList
-      mapAttrsToList
-      replicate
-      ;
+  toHyprconf = { attrs, indentLevel ? 0, importantPrefixes ? [ "$" ], }:
+    let
+      inherit (lib)
+        all concatMapStringsSep concatStrings concatStringsSep filterAttrs foldl
+        generators hasPrefix isAttrs isList mapAttrsToList replicate;
 
-    initialIndent = concatStrings (replicate indentLevel "  ");
+      initialIndent = concatStrings (replicate indentLevel "  ");
 
-    toHyprconf' = indent: attrs: let
-      sections =
-        filterAttrs (n: v: isAttrs v || (isList v && all isAttrs v)) attrs;
+      toHyprconf' = indent: attrs:
+        let
+          sections =
+            filterAttrs (n: v: isAttrs v || (isList v && all isAttrs v)) attrs;
 
-      mkSection = n: attrs:
-        if lib.isList attrs
-        then (concatMapStringsSep "\n" (a: mkSection n a) attrs)
-        else ''
-          ${indent}${n} {
-          ${toHyprconf' "  ${indent}" attrs}${indent}}
-        '';
+          mkSection = n: attrs:
+            if lib.isList attrs then
+              (concatMapStringsSep "\n" (a: mkSection n a) attrs)
+            else ''
+              ${indent}${n} {
+              ${toHyprconf' "  ${indent}" attrs}${indent}}
+            '';
 
-      mkFields = generators.toKeyValue {
-        listsAsDuplicateKeys = true;
-        inherit indent;
-      };
+          mkFields = generators.toKeyValue {
+            listsAsDuplicateKeys = true;
+            inherit indent;
+          };
 
-      allFields =
-        filterAttrs (n: v: !(isAttrs v || (isList v && all isAttrs v)))
-        attrs;
+          allFields =
+            filterAttrs (n: v: !(isAttrs v || (isList v && all isAttrs v)))
+            attrs;
 
-      isImportantField = n: _:
-        foldl (acc: prev:
-          if hasPrefix prev n
-          then true
-          else acc)
-        false
-        importantPrefixes;
+          isImportantField = n: _:
+            foldl (acc: prev: if hasPrefix prev n then true else acc) false
+            importantPrefixes;
 
-      importantFields = filterAttrs isImportantField allFields;
+          importantFields = filterAttrs isImportantField allFields;
 
-      fields =
-        builtins.removeAttrs allFields
-        (mapAttrsToList (n: _: n) importantFields);
-    in
-      mkFields importantFields
-      + concatStringsSep "\n" (mapAttrsToList mkSection sections)
-      + mkFields fields;
-  in
-    toHyprconf' initialIndent attrs;
+          fields = builtins.removeAttrs allFields
+            (mapAttrsToList (n: _: n) importantFields);
+        in mkFields importantFields
+        + concatStringsSep "\n" (mapAttrsToList mkSection sections)
+        + mkFields fields;
+    in toHyprconf' initialIndent attrs;
 in {
   options.programs.hyprland = {
     plugins = lib.mkOption {
       type = with lib.types; listOf (either package path);
-      default = [];
+      default = [ ];
       description = ''
         List of Hyprland plugins to use. Can either be packages or
         absolute plugin paths.
@@ -81,9 +56,9 @@ in {
     };
 
     settings = lib.mkOption {
-      type = with lib.types; let
-        valueType =
-          nullOr (oneOf [
+      type = with lib.types;
+        let
+          valueType = nullOr (oneOf [
             bool
             int
             float
@@ -91,13 +66,11 @@ in {
             path
             (attrsOf valueType)
             (listOf valueType)
-          ])
-          // {
+          ]) // {
             description = "Hyprland configuration value";
           };
-      in
-        valueType;
-      default = {};
+        in valueType;
+      default = { };
       description = ''
         Hyprland configuration written in Nix. Entries with the same key
         should be written as lists. Variables' and colors' names should be
@@ -148,20 +121,17 @@ in {
       '';
     };
 
-    sourceFirst =
-      lib.mkEnableOption ''
-        putting source entries at the top of the configuration
-      ''
-      // {
-        default = true;
-      };
+    sourceFirst = lib.mkEnableOption ''
+      putting source entries at the top of the configuration
+    '' // {
+      default = true;
+    };
 
     importantPrefixes = lib.mkOption {
       type = with lib.types; listOf str;
-      default =
-        ["$" "bezier" "name"]
-        ++ lib.optionals cfg.sourceFirst ["source"];
-      example = ["$" "bezier"];
+      default = [ "$" "bezier" "name" ]
+        ++ lib.optionals cfg.sourceFirst [ "source" ];
+      example = [ "$" "bezier" ];
       description = ''
         List of prefix of attributes to source at the top of the config.
       '';
@@ -173,32 +143,29 @@ in {
       (lib.optional (cfg.xwayland.enable) pkgs.xwayland)
     ];
     environment.etc."xdg/hypr/hyprland.conf" = let
-      shouldGenerate = cfg.extraConfig != "" || cfg.settings != {} || cfg.plugins != [];
+      shouldGenerate = cfg.extraConfig != "" || cfg.settings != { }
+        || cfg.plugins != [ ];
 
       pluginsToHyprconf = plugins:
         toHyprconf {
           attrs = {
             plugin = let
               mkEntry = entry:
-                if lib.types.package.check entry
-                then "${entry}/lib/lib${entry.pname}.so"
-                else entry;
-            in
-              map mkEntry cfg.plugins;
+                if lib.types.package.check entry then
+                  "${entry}/lib/lib${entry.pname}.so"
+                else
+                  entry;
+            in map mkEntry cfg.plugins;
           };
           inherit (cfg) importantPrefixes;
         };
-    in
-      lib.mkIf shouldGenerate {
-        text =
-          lib.optionalString (cfg.plugins != [])
-          (pluginsToHyprconf cfg.plugins)
-          + lib.optionalString (cfg.settings != {})
-          (toHyprconf {
-            attrs = cfg.settings;
-            inherit (cfg) importantPrefixes;
-          })
-          + lib.optionalString (cfg.extraConfig != "") cfg.extraConfig;
-      };
+    in lib.mkIf shouldGenerate {
+      text =
+        lib.optionalString (cfg.plugins != [ ]) (pluginsToHyprconf cfg.plugins)
+        + lib.optionalString (cfg.settings != { }) (toHyprconf {
+          attrs = cfg.settings;
+          inherit (cfg) importantPrefixes;
+        }) + lib.optionalString (cfg.extraConfig != "") cfg.extraConfig;
+    };
   };
 }

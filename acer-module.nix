@@ -1,6 +1,7 @@
 { stdenv, lib, fetchFromGitHub, kernel, kmod }:
 stdenv.mkDerivation rec {
-  name = "acer-predator-turbo-and-rgb-keyboard-linux-module-${version}-${kernel.modDirVersion}";
+  name =
+    "acer-predator-turbo-and-rgb-keyboard-linux-module-${version}-${kernel.modDirVersion}";
   version = "main";
 
   src = fetchFromGitHub {
@@ -20,7 +21,8 @@ stdenv.mkDerivation rec {
   '';
 
   makeFlags = [
-    "-C" "${kernel.dev}/lib/modules/${kernel.modDirVersion}/build"
+    "-C"
+    "${kernel.dev}/lib/modules/${kernel.modDirVersion}/build"
     "M=$(PWD)"
     "O=${kernel.dev}/lib/modules/${kernel.modDirVersion}/build" # Point to kernel build output
     "BUILD_TMP_DIR=$buildRoot" # Redirect temp files
@@ -33,7 +35,8 @@ stdenv.mkDerivation rec {
 
   meta = with lib; {
     description = "Improved Linux driver for Acer RGB Keyboards";
-    homepage = "https://github.com/JafarAkhondali/acer-predator-turbo-and-rgb-keyboard-linux-module";
+    homepage =
+      "https://github.com/JafarAkhondali/acer-predator-turbo-and-rgb-keyboard-linux-module";
     license = licenses.gpl3;
     platforms = platforms.linux;
   };

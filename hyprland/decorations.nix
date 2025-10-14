@@ -1,5 +1,5 @@
-{config, ...}: let
-  inherit (config.modules.other.system) username;
+{ config, ... }:
+let inherit (config.modules.other.system) username;
 in {
   programs.hyprland.settings = {
     #Decoration settings
@@ -19,9 +19,7 @@ in {
     };
     # Bezier curves for aninmations.
     # Generate your own at https://www.cssportal.com/css-cubic-bezier-generator/
-    bezier = [
-      "dupa, 0.1, 0.9, 0.1, 1.05"
-    ];
+    bezier = [ "dupa, 0.1, 0.9, 0.1, 1.05" ];
     # Hyprland anomations, using the above bezier curves
     animations = {
       enabled = false;

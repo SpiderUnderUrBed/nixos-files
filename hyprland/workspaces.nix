@@ -1,8 +1,5 @@
-{
-  config,
-  lib,
-  ...
-}: let
+{ config, lib, ... }:
+let
   inherit (config.modules.system.hardware) monitors;
   inherit (lib) imap0 flatten optionalString;
   inherit (builtins) map genList attrNames toString;
@@ -18,21 +15,21 @@ in {
       # and have to merge them into one big list.
       (flatten
         # We then use imap0 insted of map because imap0 starts indexing at zero as oppsed to one with map.
-        (imap0 (monitorIndex: monitorName: (
-            map (
-              i: let
-                # we define our own modulo operation for this,
-                # since only the first workspace on each monitor is the default workspace.
-                mod = a: b: a - (b * (a / b));
-                workspace = toString i;
-                isDefault = (mod i 10) == 1; # 11, 21, 31, ...
-              in "${workspace}, monitor:${monitorName}${optionalString isDefault ", default:true"}"
-            )
-            # we generate a list of 10 elements for each monitor. We have to add 1 each time since genList starts indexing at 0.
-            # also, we add the monitorIndex * 10 to get 10 workspaces for each individual monitor.
-            (genList (i: i + 1 + (10 * monitorIndex)) 10)
-          ))
-          # our attrSet of different monitors
+        (imap0 (monitorIndex: monitorName:
+          (map (i:
+            let
+              # we define our own modulo operation for this,
+              # since only the first workspace on each monitor is the default workspace.
+              mod = a: b: a - (b * (a / b));
+              workspace = toString i;
+              isDefault = (mod i 10) == 1; # 11, 21, 31, ...
+            in "${workspace}, monitor:${monitorName}${
+              optionalString isDefault ", default:true"
+            }")
+          # we generate a list of 10 elements for each monitor. We have to add 1 each time since genList starts indexing at 0.
+          # also, we add the monitorIndex * 10 to get 10 workspaces for each individual monitor.
+            (genList (i: i + 1 + (10 * monitorIndex)) 10)))
+        # our attrSet of different monitors
           (attrNames monitors)))
       # These are my two special workspaces
       ++ [

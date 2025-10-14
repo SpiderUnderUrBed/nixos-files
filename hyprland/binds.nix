@@ -1,8 +1,5 @@
-{
-  config,
-  pkgs,
-  ...
-}: let
+{ config, pkgs, ... }:
+let
   cfg = config.modules.usrEnv.desktops.hyprland;
   inherit (builtins) map genList toString;
 in {
@@ -11,22 +8,21 @@ in {
     bind =
       # workspaces
       # split-workspace is because of the split-workspace plugin
-      map (
-        i: let
+      map (i:
+        let
           mod = a: b: a - (b * (a / b));
           key = toString (mod i 10);
           workspace = toString i;
-        in "$mainMod, ${key}, split:workspace, ${workspace}"
-      ) (genList (i: i + 1) 10)
+        in "$mainMod, ${key}, split:workspace, ${workspace}")
+      (genList (i: i + 1) 10)
       # split-movetoworkspacesilent
-      ++ map (
-        i: let
+      ++ map (i:
+        let
           mod = a: b: a - (b * (a / b));
           key = toString (mod i 10);
           workspace = toString i;
-        in "$mainMod SHIFT, ${key}, split:movetoworkspacesilent, ${workspace}"
-      ) (genList (i: i + 1) 10)
-      ++ [
+        in "$mainMod SHIFT, ${key}, split:movetoworkspacesilent, ${workspace}")
+      (genList (i: i + 1) 10) ++ [
         "$mainMod, RETURN, exec, foot"
         "$mainMod, Q, killactive"
         "$mainMod, F, fullscreen, 0"
@@ -96,10 +92,8 @@ in {
     ];
 
     # Mouse settings
-    bindm = [
-      "$mainMod, mouse:272, movewindow"
-      "$mainMod, mouse:273, resizewindow"
-    ];
+    bindm =
+      [ "$mainMod, mouse:272, movewindow" "$mainMod, mouse:273, resizewindow" ];
 
     # Some more movement-related settings
     binds = {

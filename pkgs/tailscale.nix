@@ -1,31 +1,13 @@
-{ lib,
-  stdenv,
-  buildGo124Module,
-  fetchFromGitHub,
-  fetchpatch,
-  makeWrapper,
-  getent,
-  iproute2,
-  iptables,
-  lsof,
-  shadow,
-  procps,
-  nixosTests,
-  installShellFiles,
-  tailscale-nginx-auth,
-}:
+{ lib, stdenv, buildGo124Module, fetchFromGitHub, fetchpatch, makeWrapper
+, getent, iproute2, iptables, lsof, shadow, procps, nixosTests
+, installShellFiles, tailscale-nginx-auth, }:
 
-let
-  version = "1.80.3";
-in
-buildGo124Module rec {
+let version = "1.80.3";
+in buildGo124Module rec {
   pname = "tailscale";
   inherit version;
 
-  outputs = [
-    "out"
-    "derper"
-  ];
+  outputs = [ "out" "derper" ];
 
   src = fetchFromGitHub {
     owner = "tailscale";
@@ -36,7 +18,8 @@ buildGo124Module rec {
 
   patches = [
     (fetchpatch {
-      url = "https://github.com/tailscale/tailscale/commit/327ea19746e7b0431a17562496dd0e708ab99abc.patch";
+      url =
+        "https://github.com/tailscale/tailscale/commit/327ea19746e7b0431a17562496dd0e708ab99abc.patch";
       hash = "sha256-rbTYMUTDClg3MAFew3bVbe/7MTble3HglxauHqQ9SHE=";
       #sha256-QWnx92ANpbdtcP0y9s7Q8nJ/Zmqadw5kXAvw3/JXvu8=
     })
@@ -44,19 +27,11 @@ buildGo124Module rec {
 
   vendorHash = "sha256-SiUkN6BQK1IQmLfkfPetzvYqRu9ENK6+6txtGxegF5Y=";
 
-  nativeBuildInputs = [
-    makeWrapper
-    installShellFiles
-  ];
+  nativeBuildInputs = [ makeWrapper installShellFiles ];
 
   env.CGO_ENABLED = 0;
 
-  subPackages = [
-    "cmd/derper"
-    "cmd/derpprobe"
-    "cmd/tailscaled"
-    "cmd/tsidp"
-  ];
+  subPackages = [ "cmd/derper" "cmd/derpprobe" "cmd/tailscaled" "cmd/tsidp" ];
 
   ldflags = [
     "-w"
@@ -65,14 +40,11 @@ buildGo124Module rec {
     "-X tailscale.com/version.shortStamp=${version}"
   ];
 
-  tags = [
-    "ts_include_cli"
-  ];
+  tags = [ "ts_include_cli" ];
 
   doCheck = false;
 
- postInstall =
-  ''
+  postInstall = ''
     ln -s $out/bin/tailscaled $out/bin/tailscale
     moveToOutput "bin/derper" "$derper"
     moveToOutput "bin/derpprobe" "$derper"
@@ -107,14 +79,10 @@ buildGo124Module rec {
   meta = with lib; {
     homepage = "https://tailscale.com";
     description = "Node agent for Tailscale, a mesh VPN built on WireGuard";
-    changelog = "https://github.com/tailscale/tailscale/releases/tag/v${version}";
+    changelog =
+      "https://github.com/tailscale/tailscale/releases/tag/v${version}";
     license = licenses.bsd3;
     mainProgram = "tailscale";
-    maintainers = with maintainers; [
-      mbaillie
-      jk
-      mfrw
-      pyrox0
-    ];
+    maintainers = with maintainers; [ mbaillie jk mfrw pyrox0 ];
   };
 }
