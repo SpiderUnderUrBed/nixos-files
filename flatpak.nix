@@ -65,6 +65,7 @@ in {
     #"com.discordapp.DiscordCanary"
     #"com.discordapp.Discord"
     #"page.codeberg.libre_menu_editor.LibreMenuEditor"
+    "rocks.shy.VacuumTube"
     "org.luanti.luanti"
     "org.kde.kmymoney"
     "com.prusa3d.PrusaSlicer"

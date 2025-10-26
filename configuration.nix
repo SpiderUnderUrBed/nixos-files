@@ -342,11 +342,15 @@ in {
       xwayland
       xwayland-satellite
     ]) ++ [
+      dust
+      borgbackup
       nixfmt-classic
       git-lfs
       prismlauncher
+      ffmpeg
       #p7zip
       #duc
+      #(pkgs.callPackage ./pkgs/aagl.nix { })
       (pkgs.callPackage ./pkgs/winboat.nix { })
       #(pkgs.haskellPackages.ghcWithPackages (pkgs: with pkgs; [
       #  cabal-install

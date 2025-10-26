@@ -1,0 +1,84 @@
+{ lib
+, stdenv
+, rustPlatform
+, fetchFromGitHub
+, pkg-config
+, openssl
+, gtk4
+, libadwaita
+, glib
+, wrapGAppsHook4
+, protobuf
+}:
+
+let
+  anime-game-core-src = fetchFromGitHub {
+    owner = "JohnTheCoolingFan";
+    repo = "anime-game-core";
+    rev = "sophon-free-space-check";
+    sha256 = "0np58bizmri5h75ayij10rwb6x4v30c4dvfxg3mkkandmr7apmqj";
+  };
+
+  anime-launcher-sdk-src = fetchFromGitHub {
+    owner = "an-anime-team";
+    repo = "anime-launcher-sdk";
+    rev = "1.32.0";
+    sha256 = "189nsrm41ihhbg85qxvr650nhi7s4c2cj8m5sgmjbw0k7jfrq75j";
+  };
+
+in rustPlatform.buildRustPackage rec {
+  pname = "anime-game-launcher";
+  version = "unstable-2024-10-17";
+
+  src = fetchFromGitHub {
+    owner = "an-anime-team";
+    repo = "an-anime-game-launcher";
+    rev = "main";
+    sha256 = "0x748vsv2g6silhyx56aiqk3wy8hrjbycryhs0bpjvhnvfgcrbv2";
+  };
+
+  cargoLock.lockFile = ./anime-game-launcher-lock/Cargo.lock;
+
+  postPatch = ''
+    cp ${./anime-game-launcher-lock/Cargo.lock} Cargo.lock
+    
+    mkdir -p ../anime-game-core
+    mkdir -p ../anime-launcher-sdk
+    cp -r ${anime-game-core-src}/* ../anime-game-core/
+    cp -r ${anime-launcher-sdk-src}/* ../anime-launcher-sdk/
+    chmod -R +w ../anime-game-core
+    chmod -R +w ../anime-launcher-sdk
+
+    substituteInPlace Cargo.toml \
+      --replace-fail 'git = "https://github.com/an-anime-team/anime-launcher-sdk"' 'path = "../anime-launcher-sdk"' \
+      --replace-fail 'tag = "1.32.0"' ""
+    
+    substituteInPlace ../anime-launcher-sdk/Cargo.toml \
+      --replace-fail 'git = "https://github.com/an-anime-team/anime-game-core"' 'path = "../anime-game-core"' \
+      --replace-fail 'tag = "1.36.3"' ""
+  '';
+
+  nativeBuildInputs = [
+    pkg-config
+    wrapGAppsHook4
+    protobuf
+  ];
+
+  buildInputs = [
+    openssl
+    gtk4
+    libadwaita
+    glib
+  ];
+
+  doCheck = false;
+
+  meta = with lib; {
+    description = "Anime Game launcher for Linux";
+    homepage = "https://github.com/an-anime-team/an-anime-game-launcher";
+    license = licenses.gpl3Only;
+    maintainers = [ ];
+    platforms = platforms.linux;
+    mainProgram = "anime-game-launcher";
+  };
+}
