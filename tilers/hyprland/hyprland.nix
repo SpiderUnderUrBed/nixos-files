@@ -109,7 +109,7 @@ let
         "SUPER+F,1,fullscreen"
         "SUPER,F,fullscreen,1"
       ];
-      extraConfig = (builtins.readFile /etc/nixos/hyprland.conf);
+      extraConfig = (builtins.readFile /etc/nixos/tilers/hyprland/hyprland.conf);
     };
   };
 in hyprlandConfig
