@@ -6,7 +6,7 @@
 , electron
 , gcc
 , glibc
-, freerdp3
+, freerdp
 , usbutils
 , libusb1
 }:
@@ -36,7 +36,7 @@ stdenv.mkDerivation {
 
   nativeBuildInputs = [
     makeWrapper
-    freerdp3
+    freerdp
     usbutils
     libusb1
   ];

@@ -430,7 +430,7 @@ in {
       anki
       cryfs
       #sherlock
-      shell-gpt
+      #shell-gpt
       feh
 
       yt-dlp
@@ -466,9 +466,9 @@ in {
       vitetris
 
       ettercap
-
-      tenacity
-      # audacity
+	
+      #tenacity
+      audacity
       #       bottles
 
       vlc
@@ -494,7 +494,8 @@ in {
       python3
       logseq
       rage
-      onlyoffice-bin
+      onlyoffice-desktopeditors
+      #onlyoffice-bin (deprecated)
       #vesktop
       #thefuck
 
@@ -1042,7 +1043,7 @@ in {
   fonts.packages = with pkgs; [
     noto-fonts
     noto-fonts-cjk-sans
-    noto-fonts-emoji
+    noto-fonts-color-emoji
     liberation_ttf
     fira-code
     fira-code-symbols

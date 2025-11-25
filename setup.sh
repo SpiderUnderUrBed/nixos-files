@@ -41,9 +41,9 @@ fi
 #Download the sober flatpakref
 #ln -s /home/nixos/spiderunderurbed/home-manager/ /etc/nixos/spiderunderurbed/
 ln -s /home/$USER/$HOME_DIR /etc/nixos/$USER
-ln -s /etc/nixos/hyprland.conf /etc/nixos/$USER/hyprland/hyprland.conf
-ln -s /etc/nixos/hyprland.nix /etc/nixos/$USER/hyprland/hyprland.nix
-ln -s /etc/nixos/hyprland /etc/nixos/$USER/hyprland/
+ln -s /etc/nixos/tilers/hyprland/hyprland.conf /etc/nixos/$USER/hyprland/hyprland.conf
+ln -s /etc/nixos/tilers/hyprland/hyprland.nix /etc/nixos/$USER/hyprland/hyprland.nix
+ln -s /etc/nixos/tilers/hyprland/hyprland-module /etc/nixos/$USER/hyprland/
 
 chown -R spiderunderurbed:users /etc/nixos/spiderunderurbed/
 #chmod $UUID /etc/nixos/spiderunderurbed/

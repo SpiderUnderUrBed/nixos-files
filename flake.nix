@@ -3,12 +3,25 @@
 
   inputs = {
     #    nix-gaming.url = "github:fufexan/nix-gaming";
+
+    #dont use much
     home-manager = {
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     hm-inputs.url = "/home/spiderunderurbed/home-manager";
     hyprland = { url = "github:hyprwm/Hyprland"; };
+    lanzaboote = { url = "github:nix-community/lanzaboote/v0.3.0"; };
+    # --- 
+    # archived
+    #arion = {
+    #  url = "github:hercules-ci/arion";
+    #  inputs.nixpkgs.follows = "nixpkgs";
+    #};
+    # ---
+
+    sops-nix.url = "github:Mic92/sops-nix";
+    sops-nix.inputs.nixpkgs.follows = "nixpkgs";
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     stable.url = "github:NixOS/nixpkgs/nixos-24.11";
     auto-cpufreq = {
@@ -17,17 +30,13 @@
     };
     #    envycontrol.url = "github:bayasdev/envycontrol";
     envycontrol.url = "github:SpiderUnderUrBed/envycontrol";
-    lanzaboote = { url = "github:nix-community/lanzaboote/v0.3.0"; };
+    #lanzaboote = { url = "github:nix-community/lanzaboote/v0.3.0"; };
     flake-compat = {
       url = "github:edolstra/flake-compat";
       flake = false;
     };
 
     nix-software-center.url = "github:snowfallorg/nix-software-center";
-    arion = {
-      url = "github:hercules-ci/arion";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
     #nixos-cachyos-kernel.url = "github:drakon64/nixos-cachyos-kernel";
     #chaotic.url = "github:chaotic-cx/nyx/nyxpkgs-unstable";
     chaotic = {
@@ -40,11 +49,8 @@
 
   };
 
-  outputs = { self, nixpkgs, auto-cpufreq, envycontrol, arion,
-
-    nix-flatpak,
+  outputs = { self, nixpkgs, auto-cpufreq, envycontrol, sops-nix, nix-flatpak,
     #    nix-gaming,
-
     chaotic, nix-software-center, flake-compat, home-manager, hyprland
     , lanzaboote, hm-inputs, ... }@inputs:
     let
@@ -99,6 +105,7 @@
         };
         # // extraSpecialArgs;
         modules = [
+	  sops-nix.nixosModules.sops
           lanzaboote.nixosModules.lanzaboote
           auto-cpufreq.nixosModules.default
           chaotic.nixosModules.default

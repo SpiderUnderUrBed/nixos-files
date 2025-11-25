@@ -1,0 +1,57 @@
+shell-gpt with this:
+error: Cannot build '/nix/store/k3mqb8fx815w2a6j6x2d62g1zdxjz894-shell-gpt-1.4.5.drv'.
+       Reason: builder failed with exit code 1.
+       Output paths:
+         /nix/store/q1kaw5xsc4smdqpl6aja7a9928ib94cg-shell-gpt-1.4.5
+         /nix/store/rbpgrcy4n21m6wqgxhkxgrr6gjnxgs6b-shell-gpt-1.4.5-dist
+       Last 25 log lines:
+       > Running phase: unpackPhase
+       > unpacking source archive /nix/store/gm8b11z3simf0q2j9g2lm1grfb4fnz0m-source
+       > source root is source
+       > setting SOURCE_DATE_EPOCH to timestamp 315619200 of file "source/tests/utils.py"
+       > Running phase: patchPhase
+       > Running phase: updateAutotoolsGnuConfigScriptsPhase
+       > Running phase: configurePhase
+       > no configure script, doing nothing
+       > Running phase: buildPhase
+       > Executing pypaBuildPhase
+       > Creating a wheel...
+       > pypa build flags: --no-isolation --outdir dist/ --wheel
+       > * Getting build dependencies for wheel...
+       > * Building wheel...
+       > Successfully built shell_gpt-1.4.5-py3-none-any.whl
+       > Finished creating a wheel...
+       > /build/source/dist /build/source
+       > Unpacking to: unpacked/shell_gpt-1.4.5...OK
+       > Repacking wheel as ./shell_gpt-1.4.5-py3-none-any.whl...OK
+       > /build/source
+       > Finished executing pypaBuildPhase
+       > Running phase: pythonRuntimeDepsCheckHook
+       > Executing pythonRuntimeDepsCheck
+       > Checking runtime dependencies for shell_gpt-1.4.5-py3-none-any.whl
+       >   - openai<2.0.0,>=1.34.0 not satisfied by version 2.7.2
+       For full logs, run:
+         nix log /nix/store/k3mqb8fx815w2a6j6x2d62g1zdxjz894-shell-gpt-1.4.5.drv
+error: Cannot build '/nix/store/0lhxa0i3lb6y61fd3ql8x6cvhfzfx6vb-system-path.drv'.
+       Reason: 1 dependency failed.
+       Output paths:
+         /nix/store/n8hfwyrywhxbdga99sjkbfykx6b80ihy-system-path
+error: Cannot build '/nix/store/ii416fcy87xg7h1s4g425dv0367028mi-system-path.drv'.
+       Reason: 1 dependency failed.
+       Output paths:
+         /nix/store/gxlrq2lczy1f360lfjkmglss9g79ya6y-system-path
+error: Cannot build '/nix/store/jnc1yiznmjg84pgvqbv39vjb6i0yj3lk-system-path.drv'.
+       Reason: 1 dependency failed.
+       Output paths:
+         /nix/store/ss9nqw5nlhd545wnfshnv8xpnnxibrxj-system-path
+error: Cannot build '/nix/store/kb895cgf3vfaxw4gmpdb629jm06rd37k-system-path.drv'.
+       Reason: 1 dependency failed.
+       Output paths:
+         /nix/store/bxix5ycsysy21h81r42r06dm7yc8w207-system-path
+error: Cannot build '/nix/store/asfvd7vz2msz1rflzkhs9aan1a7kx3fy-nixos-system-daspidercave-25.11.20251112.c5ae371.drv'.
+       Reason: 1 dependency failed.
+       Output paths:
+         /nix/store/rrmq88bqzal1h9zxgl8nxh554lvmw2sv-nixos-system-daspidercave-25.11.20251112.c5ae371
+Command 'nix --extra-experimental-features 'nix-command flakes' build --print-out-paths '/etc/nixos#nixosConfigurations."daspidercave".config.system.build.toplevel' --no-link --show-trace --impure' returned non-zero exit status 1.
+[ble: exit 1]
+
