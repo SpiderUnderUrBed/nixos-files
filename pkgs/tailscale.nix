@@ -1,9 +1,9 @@
-{ lib, stdenv, buildGo124Module, fetchFromGitHub, fetchpatch, makeWrapper
+{ lib, stdenv, buildGo125Module, fetchFromGitHub, fetchpatch, makeWrapper
 , getent, iproute2, iptables, lsof, shadow, procps, nixosTests
 , installShellFiles, tailscale-nginx-auth, }:
 
 let version = "1.80.3";
-in buildGo124Module rec {
+in buildGo125Module rec {
   pname = "tailscale";
   inherit version;
 

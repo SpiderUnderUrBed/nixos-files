@@ -59,8 +59,8 @@ let
   #pinnedKde = final: prev: {
   #    services.xserver.desktopManager.plasma6 = kdePkgs.services.xserver.desktopManager.plasma6;
   #};
-  hyprlandEnable = false;
-  secondaryEnable = false;
+  hyprlandEnable = true;
+  secondaryEnable = true;
   arion = pkgs.writeShellApplication {
     name = "arion";
     runtimeInputs = [
@@ -267,7 +267,7 @@ in {
     mullvad-vpn = { enable = false; };
 
     displayManager = {
-      execCmd = lib.mkDefault "exec ${pkgs.sddm}/bin/sddm";
+      execCmd = lib.mkDefault "exec ${pkgs.kdePackages.sddm}/bin/sddm";
       sessionPackages = [ pkgs.hyprland ];
 
     };
@@ -286,7 +286,6 @@ in {
     };
     tlp = {
       enable = false;
-
     };
     monero = {
       enable = false;
@@ -323,6 +322,7 @@ in {
   environment.systemPackages = [ stable.expressvpn ] ++ (with pkgs;
     (lib.optionals hyprlandEnable [
       # overskride
+      #fastfetch
       hdrop
       hyprshot
       hyprland
@@ -342,15 +342,30 @@ in {
       xwayland
       xwayland-satellite
     ]) ++ [
+      logisim-evolution
+      logisim
+      bluej
+      fastfetch
+      #tor
+      jmtpfs
+      #simple-mtpfs
+      android-tools 
+      #libmtp
+      #nixgl.nixGLNvidia
+      obs-studio
       dust
       borgbackup
       nixfmt-classic
+      ripgrep
+      #inputs.tagstudio.packages.${pkgs.stdenv.hostPlatform.system}.tagstudio
       git-lfs
       prismlauncher
       ffmpeg
+      pulseaudio
       #p7zip
       #duc
       #(pkgs.callPackage ./pkgs/aagl.nix { })
+      (pkgs.callPackage ./pkgs/blesh.nix { })
       (pkgs.callPackage ./pkgs/winboat.nix { })
       #(pkgs.haskellPackages.ghcWithPackages (pkgs: with pkgs; [
       #  cabal-install
@@ -412,7 +427,7 @@ in {
       killall
       #       lf
       unzip
-      blesh
+      #blesh
       pyenv
       appimage-run
       rmtrash
@@ -427,7 +442,7 @@ in {
       tldr
       sbctl
       efibootmgr
-      anki
+      #anki
       cryfs
       #sherlock
       #shell-gpt
@@ -435,6 +450,7 @@ in {
 
       yt-dlp
       gh
+      file
       avml
       volatility3
       wget
@@ -590,7 +606,8 @@ in {
 
   hardware.nvidia = {
     #package = unstablePkgs
-    package = config.boot.kernelPackages.nvidiaPackages.beta;
+    #package = config.boot.kernelPackages.nvidiaPackages.beta;
+    package = config.boot.kernelPackages.nvidiaPackages.stable;
     modesetting.enable = true;
     open = false;
     nvidiaSettings = true;
@@ -661,6 +678,38 @@ in {
         		blacklist nouveau
         		options nouveau modeset=0
           	'';
+      #services.power-profiles-daemon.enable = lib.mkForce false;
+      #services.auto-cpufreq.enable = true;
+      services.auto-cpufreq.settings = {
+        battery = {
+          governor = "powersave";
+          turbo = "never";
+        };
+        charger = {
+          governor = "performance";
+          turbo = "auto";
+        };
+      };
+      #services.tlp = {
+      #  enable = true;
+      #  settings = {
+      #    CPU_SCALING_GOVERNOR_ON_AC = "performance";
+      #    CPU_SCALING_GOVERNOR_ON_BAT = "powersave";
+
+      #    CPU_ENERGY_PERF_POLICY_ON_BAT = "power";
+      #    CPU_ENERGY_PERF_POLICY_ON_AC = "performance";
+
+      #    CPU_MIN_PERF_ON_AC = 0;
+      #    CPU_MAX_PERF_ON_AC = 100;
+      #    CPU_MIN_PERF_ON_BAT = 0;
+      #    CPU_MAX_PERF_ON_BAT = 20;
+
+      #    #Optional helps save long term battery health
+      #    START_CHARGE_THRESH_BAT0 = 40; # 40 and below it starts to charge
+      #    STOP_CHARGE_THRESH_BAT0 = 80; # 80 and above it stops charging
+
+      #   };
+      # };
 
       #services.udev.extraRules = ''s
 
@@ -677,7 +726,7 @@ in {
     };
   };
 
-  services.flatpak.enable = true;
+  #services.flatpak.enable = false;
   services.pcscd.enable = true;
 
   networking.firewall = {
@@ -696,13 +745,21 @@ in {
   };
 
   services.openssh.ports = [ 3060 ];
-  services.udev.packages = [ pkgs.yubikey-personalization pkgs.libu2f-host ];
+  services.udev.packages = [ 
+	pkgs.yubikey-personalization 
+	pkgs.libu2f-host 
+#	pkgs.android-udev-rules
+  ];
 
+  # kernal packages
   #boot.`kernelParams = [ "
   #boot.blacklistedKernelModules = [ "nouveau" ];
   boot.kernelPackages =
+  #pkgs.linux_xanmod
+    #pkgs.cachyosKernels.linuxPackages-cachyos-latest;
     #pkgs.linuxPackages_cachyos; 
-    pkgs.linuxPackages_latest;
+    pkgs.linuxPackages;
+    #pkgs.linuxPackages_latest;
   #cachyos_kernel;
   #pkgs.linuxPackages_cachyos;
   #with pkgs; linuxPackagesFor linuxPackages_cachyos;
@@ -768,7 +825,7 @@ in {
   };
   programs = {
     ydotool.enable = true;
-    adb.enable = true;
+    #adb.enable = true;
     fuse.userAllowOther = true;
     nix-ld.enable = true;
     gamemode.enable = true;
@@ -814,7 +871,7 @@ in {
         #};
         "{20255b4d-cc15-4ca1-98e6-e63426621e75}" = {
           install_url =
-            "ttps://addons.mozilla.org/firefox/downloads/latest/scrollsave/latest.xpi";
+            "https://addons.mozilla.org/firefox/downloads/latest/scrollsave/latest.xpi";
           installation_mode = "force_installed";
         };
         "uBlock0@raymondhill.net" = {
@@ -876,6 +933,7 @@ in {
         #    install_url = "https://addons.mozilla.org/firefox/downloads/latest/youtube-recommended-videos/latest.xpi";
         #    installation_mode = "force_installed";
         #};
+        # Unhook ^
       };
     };
 
@@ -913,7 +971,10 @@ in {
       #package = with pkgs; (GPUOffloadApp steam "steam");
       package = pkgs.steam;
       # platformOptimizations.enable = true;
-      extraCompatPackages = with pkgs; [ proton-ge-bin ];
+      extraCompatPackages = with pkgs; [ 
+	  proton-ge-bin
+	  (pkgs.callPackage ./pkgs/dwproton.nix { }) 
+	];
       enable = true;
       remotePlay.openFirewall = true;
       dedicatedServer.openFirewall = true;
@@ -933,7 +994,8 @@ in {
   imports = [
     #specialArgs.nix-gaming.nixosModules.platformOptimizations
     ./expressvpn.nix
-    ./hyprland/nixos-module.nix
+    ./tilers/hyprland/hyprland-module/nixos-module.nix
+    #niri.nixosModules.niri
     aagl.module
     ./hardware-configuration.nix
 
@@ -959,6 +1021,8 @@ in {
   };
 
   time.timeZone = "Pacific/Auckland";
+  #time.timeZone = "Pacific/Fiji";
+  #time.timeZone = "Asia/Kolkata";
   #time.timeZone = "Australia/Sydney";
 
   i18n.defaultLocale = "en_NZ.UTF-8";
@@ -1009,6 +1073,7 @@ in {
   security.rtkit.enable = true;
   services.pipewire = {
     enable = true;
+    #pulse.enable = true;
     wireplumber = {
       #extraConfig = {
       #        "stream.conf" = {

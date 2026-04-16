@@ -1,0 +1,39 @@
+{ lib, stdenv, fetchgit }:
+
+let
+  version = "10.0-19";
+in stdenv.mkDerivation {
+  pname = "dwproton";
+  inherit version;
+
+  src = fetchgit {
+    url = "https://dawn.wine/dawn-winery/dwproton.git";
+    rev = "refs/tags/dwproton-${version}";
+    fetchSubmodules = true;
+    hash = "sha256-e28i0Jw+h50AFFewwcd8YgmP0CzBpDhmLcQVDph6J+E=";
+  };
+
+  buildPhase = ''
+    mkdir build && cd build
+    ../configure.sh \
+      --build-name=dwproton-${version} \
+      --container-engine=docker \
+      --enable-ccache \
+      --without-tts
+    make -j$(nproc) redist
+  '';
+
+  installPhase = ''
+    mkdir -p $out/share/steam/compatibilitytools.d
+    cp -r redist $out/share/steam/compatibilitytools.d/dwproton
+  '';
+
+  meta = {
+    description = "Dawn Winery's custom Proton fork with fixes for various games";
+    homepage = "https://dawn.wine/dawn-winery/dwproton";
+    license = lib.licenses.bsd3;
+    platforms = [ "x86_64-linux" "aarch64-linux" ];
+    maintainers = [];
+  };
+}
+

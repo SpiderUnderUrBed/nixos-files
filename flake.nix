@@ -3,15 +3,24 @@
 
   inputs = {
     #    nix-gaming.url = "github:fufexan/nix-gaming";
-
+#    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nix-cachyos-kernel.url = "github:xddxdd/nix-cachyos-kernel";
+    nix-flatpak.url = "github:gmodena/nix-flatpak";
     #dont use much
     home-manager = {
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    hm-inputs.url = "/home/spiderunderurbed/home-manager";
-    hyprland = { url = "github:hyprwm/Hyprland"; };
     lanzaboote = { url = "github:nix-community/lanzaboote/v0.3.0"; };
+    hyprland = { url = "github:hyprwm/Hyprland"; };
+    #niri = {
+    #  url = "github:sodiboo/niri-flake";
+    #  inputs.nixpkgs.follows = "nixpkgs";
+    #};
+
+    hm-inputs.url = "/home/spiderunderurbed/home-manager";
+
     # --- 
     # archived
     #arion = {
@@ -22,7 +31,13 @@
 
     sops-nix.url = "github:Mic92/sops-nix";
     sops-nix.inputs.nixpkgs.follows = "nixpkgs";
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    chaotic = {
+      url = "github:chaotic-cx/nyx/nyxpkgs-unstable";
+      #rev = "2ab29fd77896a69a77bb98fd792fb6102f44b449";
+      #narHash = "sha256-aYDO6La5fuG5xzVYBFfoheWukwggcyh3LlfI0p+RnHw=";
+    };
+
+   # nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     stable.url = "github:NixOS/nixpkgs/nixos-24.11";
     auto-cpufreq = {
       url = "github:AdnanHodzic/auto-cpufreq";
@@ -39,19 +54,17 @@
     nix-software-center.url = "github:snowfallorg/nix-software-center";
     #nixos-cachyos-kernel.url = "github:drakon64/nixos-cachyos-kernel";
     #chaotic.url = "github:chaotic-cx/nyx/nyxpkgs-unstable";
-    chaotic = {
-      url = "github:chaotic-cx/nyx/nyxpkgs-unstable";
-      #rev = "2ab29fd77896a69a77bb98fd792fb6102f44b449";
-      #narHash = "sha256-aYDO6La5fuG5xzVYBFfoheWukwggcyh3LlfI0p+RnHw=";
+
+    tagstudio = {
+      url = "github:TagStudioDev/TagStudio";
+      inputs.nixpkgs.follows = "nixpkgs"; # Use the same package set as your flake.
     };
-
-    nix-flatpak.url = "github:gmodena/nix-flatpak";
-
   };
 
-  outputs = { self, nixpkgs, auto-cpufreq, envycontrol, sops-nix, nix-flatpak,
+  outputs = { self, nixpkgs, nix-cachyos-kernel, auto-cpufreq, envycontrol, sops-nix, nix-flatpak,
     #    nix-gaming,
-    chaotic, nix-software-center, flake-compat, home-manager, hyprland
+    chaotic, nix-software-center, flake-compat, home-manager, hyprland, 
+    # niri
     , lanzaboote, hm-inputs, ... }@inputs:
     let
       #    home-setup = builtins.getFlake "/home/spiderunderurbed/home-manager"; 
@@ -120,6 +133,11 @@
           ./flatpak.nix
 
           nix-flatpak.nixosModules.nix-flatpak
+          {
+	    nixpkgs.overlays = [
+		nix-cachyos-kernel.overlays.default
+	    ];
+	  }
           #home-manager.nixosModules.home-manager
           #	netsecrets.nixosModules.default
           {
