@@ -63,7 +63,7 @@
 
   outputs = { self, nixpkgs, nix-cachyos-kernel, auto-cpufreq, envycontrol, sops-nix, nix-flatpak,
     #    nix-gaming,
-    chaotic, nix-software-center, flake-compat, home-manager, hyprland, 
+    chaotic, nix-software-center, flake-compat, home-manager, hyprland
     # niri
     , lanzaboote, hm-inputs, ... }@inputs:
     let

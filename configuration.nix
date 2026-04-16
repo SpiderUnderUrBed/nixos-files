@@ -829,6 +829,7 @@ in {
     fuse.userAllowOther = true;
     nix-ld.enable = true;
     gamemode.enable = true;
+    niri.enable = true;
     uwsm = {
       enable = true;
       waylandCompositors.hyprland = {
