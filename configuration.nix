@@ -255,7 +255,7 @@ in {
   };
   services = {
 
-    geoclue2 = { enable = false; };
+    geoclue2 = { enable = lib.mkForce true; };
     gpsd = {
       enable = false;
       port = 3330;
@@ -595,7 +595,10 @@ in {
   hardware.opentabletdriver = { enable = false; };
 
   nixpkgs.config.nvidia.acceptLicense = true;
-  services.xserver.videoDrivers = [ "nvidia" ];
+  services.xserver.videoDrivers = [ 
+	"modesetting"
+	#"nvidia" 
+  ];
 
   #hardware.opengl.enable = true;
   #hardware.opengl.driSupport = true;
@@ -606,8 +609,8 @@ in {
 
   hardware.nvidia = {
     #package = unstablePkgs
-    #package = config.boot.kernelPackages.nvidiaPackages.beta;
-    package = config.boot.kernelPackages.nvidiaPackages.stable;
+    package = config.boot.kernelPackages.nvidiaPackages.beta;
+    #package = config.boot.kernelPackages.nvidiaPackages.stable;
     modesetting.enable = true;
     open = false;
     nvidiaSettings = true;
@@ -632,6 +635,7 @@ in {
   };
 
   environment.sessionVariables = {
+    #KWIN_DRM_DEVICES = "/dev/dri/by-path/pci-0000:00:02.0-card";
     #       "NIX_CONF_DIR" = "/etc/nixos/nix/";
   };
   #ix.settings.experimental-features = [ "nix-command" "flakes" ];
@@ -1039,23 +1043,32 @@ in {
     LC_TELEPHONE = "en_NZ.UTF-8";
     LC_TIME = "en_NZ.UTF-8";
   };
+   
 
+  services.desktopManager = {
+	cosmic.enable = true;
+	plasma6.enable = true;
+	gnome.enable = false;
+  };
   services.xserver = {
 
     enable = true;
     displayManager = {
       hiddenUsers = [ "jellyfin" ];
+      setupCommands = ''
+	xrandr --output HDMI-0 --mode 2560x1440 --rate 144 --right-of eDP-1-1
+      '';
       sddm = {
-
         wayland.enable = true;
         enable = true;
       };
     };
 
-    desktopManager = {
-      plasma6.enable = true;
-      gnome.enable = false;
-    };
+    #desktopManager = {
+      #plasma6.enable = true;
+      #cosmic.enable = true;
+      #gnome.enable = false;
+    #};
   };
 
   # xdg.portal = {

@@ -1,3 +1,4 @@
+
 { gitCredentialManager ? { }, options ? { }, specialArgs ? { }
 , modulesPath ? { }, lib, pkgs, inputs }:
 let
@@ -7,8 +8,8 @@ let
     #package = inputs.hyprland.pkgs.hyprland;
     systemd.enable = false;
     plugins = [
-      #	inputs.hyprland-plugins.packages.${pkgs.system}.hyprexpo
-      #	inputs.hyprspace.packages.${pkgs.system}.Hyprspace
+      # inputs.hyprland-plugins.packages.${pkgs.system}.hyprexpo
+      # inputs.hyprspace.packages.${pkgs.system}.Hyprspace
     ];
     settings = {
       "$terminal" = "konsole";
@@ -20,17 +21,17 @@ let
         (lib.getExe pkgs.waybar)
         "${pkgs.walker}/bin/walker --gapplication-service"
         "${lib.getExe pkgs.copyq} --start-server"
-        #	${lib.getExe pkgs.copyq} --start-server
+        #       ${lib.getExe pkgs.copyq} --start-server
         #(lib.getExe pkgs.copyq) --start-server
         #(lib.getExe pkgs.blue
         "${pkgs.blueman}/bin/blueman-applet"
         "${pkgs.networkmanagerapplet}/bin/nm-applet"
         "${lib.getExe pkgs.hdrop} -d"
         "${pkgs.swayosd}/bin/swayosd-server"
-        #	"touch /tmp/HYPRLAND"
+        #       "touch /tmp/HYPRLAND"
         (lib.getExe pkgs.hyprpaper)
-        #	"systemctl start xwayland-ensure --user"
-        #	"systemctl start pasystray-ensure --user"
+        #       "systemctl start xwayland-ensure --user"
+        #       "systemctl start pasystray-ensure --user"
         (lib.getExe pkgs.pasystray)
         #        "${pkgs.pasystray}/bin/pasystray"
         #[workspace special; size 75% 20%;move 12.5% 40] kitty
@@ -47,12 +48,18 @@ let
       #        "noborder, class:^(kitty-dropdown|quake)$"
       #      ]; 
       #     window
-      "windowrule" = [
-        #	"animation fade, tag:^(hidden)$"
-        "workspace 1,$dropterm"
-        "float,$dropterm"
-        "size 75% 20%,$dropterm"
-        "move 12.5% -469,$dropterm"
+      #"windowrule" = [
+        #       "animation fade, tag:^(hidden)$"
+      #  "workspace 1,$dropterm"
+      #  "float,$dropterm"
+      #  "size 75% 20%,$dropterm"
+      #  "move 12.5% -469,$dropterm"
+      #];
+      "windowrulev2" = [
+        "float, class:^(dropdown-konsole)$"
+        "stayfocused, class:^(dropdown-konsole)$"
+        "noborder, class:^(dropdown-konsole)$"
+        "rounding 0, class:^(dropdown-konsole)$"
       ];
       #    debug = { 
       #       suppress_errors = true;
@@ -77,13 +84,16 @@ let
         #"SUPER+tab,h,layoutmsg,preselect d"
         #[workspace special; size 75% 20%;move 12.5% 40] kitty
         #"SUPER+alt,k,[workspace special; size 75% 20%;move 12.5% 40] kitty --class=kitty-dropdown"
+        #", F12, exec, hdrop --floating --width 100 --height 40 --position top --gap 0 konsole"
+        #", F12, exec, hdrop --floating --width 100 --height 40 --position top --gap 0 -c dropdown-konsole konsole --profile Default"
+        ", F12, exec, hdrop --floating --width 100 --height 40 --position top --gap 0 -c dropdown-konsole konsole --name dropdown-konsole"
         "alt,F4,killactive"
         "SUPER+alt,p,exec,pavucontrol"
         #SUPER,a,exec,sh -c '[ -x "$(command -v rofi)" ] && rofi -show drun || wofi --show drun'
         "SUPER+alt,b,exec,blueman-manager"
-        #	"SUPER+alt,b,exec,overskride"
+        #       "SUPER+alt,b,exec,overskride"
         "SUPER,a,exec,walker"
-        #	"SUPER,a,exec,wofi --show drun"
+        #       "SUPER,a,exec,wofi --show drun"
         #"SUPER,a,exec,rofi -show drun"
         "SUPER+alt,q,exec,flatpak run org.qbittorrent.qBittorrent"
         "SUPER+shift,m,exec,mpv --player-operation-mode=pseudo-gui"
