@@ -36,7 +36,11 @@
       #rev = "2ab29fd77896a69a77bb98fd792fb6102f44b449";
       #narHash = "sha256-aYDO6La5fuG5xzVYBFfoheWukwggcyh3LlfI0p+RnHw=";
     };
-
+    nbfc-linux = {
+	url = "github:nbfc-linux/nbfc-linux?dir=pkgbuilds/nix";
+	inputs.nixpkgs.follows = "nixpkgs";
+    };
+  
    # nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     stable.url = "github:NixOS/nixpkgs/nixos-24.11";
     auto-cpufreq = {

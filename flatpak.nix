@@ -26,9 +26,12 @@ in {
   
   services.flatpak.packages = [
 #   "chat.revolt.RevoltDesktop"
+    "com.github.mtkennerly.ludusavi"
+    "it.mijorus.gearlever"
     "us.zoom.Zoom"
     "md.obsidian.Obsidian"
     "org.kde.kclock"
+    "org.squidowl.halloy"
     "org.godotengine.Godot"
     "com.discordapp.Discord"
     "rocks.shy.VacuumTube"

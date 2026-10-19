@@ -4,6 +4,7 @@ let
   homeInputs = (builtins.getFlake ./spiderunderurbed/flake.nix).inputs;
 
   #hyprlandConfig = ((import ./hyprland.nix) { lib = lib; pkgs = pkgs; inputs = homeInputs; }) // { enable = false; };
+  asense = pkgs.callPackage ./pkgs/asense.nix { };
   patchDesktop = pkg: appName: from: to:
     lib.hiPrio (pkgs.runCommand "$patched-desktop-entry-for-${appName}" { } ''
       ${pkgs.coreutils}/bin/mkdir -p $out/share/applications
@@ -59,8 +60,8 @@ let
   #pinnedKde = final: prev: {
   #    services.xserver.desktopManager.plasma6 = kdePkgs.services.xserver.desktopManager.plasma6;
   #};
-  hyprlandEnable = true;
-  secondaryEnable = true;
+  hyprlandEnable = false;
+  secondaryEnable = false;
   arion = pkgs.writeShellApplication {
     name = "arion";
     runtimeInputs = [
@@ -98,6 +99,31 @@ let
 in {
   nixpkgs.config.allowUnsupportedSystem = true;
   nixpkgs.overlays = [
+ (final: prev: {
+  # ...whatever you already have here...
+
+  cudaPackages_12_8 = prev.cudaPackages_12_8.overrideScope (cufinal: cuprev: {
+    cuda_compat = cuprev.cuda_compat.overrideAttrs (old: {
+      # Stub: cuda_compat is aarch64-only (Jetson), but a nixpkgs regression
+      # pulls it into x86_64 closures with no source, breaking the build.
+      src = null;
+      dontUnpack = true;
+      dontBuild = true;
+      installPhase = ''
+        mkdir -p $out/compat
+      '';
+      meta = (old.meta or { }) // {
+        platforms = final.lib.platforms.all;
+        badPlatforms = [ ];
+      };
+    });
+  });
+})
+  #(final: prev: {
+  #  cudaPackages_12_8 = prev.cudaPackages_12_8.overrideScope (cufinal: cuprev: {
+  #    cuda_compat = null;
+  #  });
+  #})
     #  (final: prev: {
     #    discord = prev.discord.overrideAttrs (previousAttrs: {
     #      installPhase =
@@ -169,6 +195,25 @@ in {
     tmpfiles.rules = [
       "d /var/nix-tmp 0755 root root -"
     ];
+    sockets.asensed = {
+      wantedBy = [ "sockets.target" ];
+      socketConfig = {
+        ListenStream = "/run/asense-control.sock";
+        SocketMode = "0600";
+        SocketUser = "spiderunderurbed";
+        Accept = false;
+      };
+    };
+    services.asensed = {
+      serviceConfig = {
+        ExecStart = "${asense}/bin/asensed";
+        User = "root";
+      };
+    };
+    services."beesd@main" = {
+    	wantedBy = [ "multi-user.target" ];
+	path = [ pkgs.coreutils ];
+    };
     user.services = {
       #"dunst" = {
       #description = "Dunst notification daemon";
@@ -218,9 +263,8 @@ in {
     #   };
     # };
   };
-  services = {
-
-  };
+  #services = {
+  #};
   #};
 
   security.sudo.enable = true;
@@ -249,12 +293,25 @@ in {
     });
   '';
   services.tailscale = {
-    package = pkgs.callPackage ./pkgs/tailscale.nix { };
+    #package = pkgs.callPackage ./pkgs/tailscale.nix { };
     #package = old.tailscale; 
     enable = true;
   };
   services = {
-
+    tor = {
+	enable = true;
+	client.enable = true;
+    };
+    ollama = { 
+	enable = true; 
+	#acceleration = "cuda"; 
+	package = pkgs.callPackage ./pkgs/ollama-cuda-bin.nix { };
+	#package = pkgs.ollama-cuda;
+  	environmentVariables = {
+    		OLLAMA_CONTEXT_LENGTH = "32768";
+  	};
+    };
+    ratbagd.enable = true;
     geoclue2 = { enable = lib.mkForce true; };
     gpsd = {
       enable = false;
@@ -269,7 +326,7 @@ in {
     displayManager = {
       execCmd = lib.mkDefault "exec ${pkgs.kdePackages.sddm}/bin/sddm";
       sessionPackages = [ pkgs.hyprland ];
-
+      defaultSession = lib.mkForce "plasma";
     };
 
     usbguard = {
@@ -342,12 +399,17 @@ in {
       xwayland
       xwayland-satellite
     ]) ++ [
+      piper
+      freerdp
+      grpcurl
       logisim-evolution
       logisim
       bluej
       fastfetch
+      zip
+      #inputs.nbfc-linux.packages.x86_64-linux.default
       #tor
-      jmtpfs
+      #jmtpfs
       #simple-mtpfs
       android-tools 
       #libmtp
@@ -355,8 +417,9 @@ in {
       obs-studio
       dust
       borgbackup
-      nixfmt-classic
+      #nixfmt-classic
       ripgrep
+      fd
       #inputs.tagstudio.packages.${pkgs.stdenv.hostPlatform.system}.tagstudio
       git-lfs
       prismlauncher
@@ -365,29 +428,31 @@ in {
       #p7zip
       #duc
       #(pkgs.callPackage ./pkgs/aagl.nix { })
+      asense
+      #(pkgs.callPackage ./pkgs/asense.nix { })
       (pkgs.callPackage ./pkgs/blesh.nix { })
       (pkgs.callPackage ./pkgs/winboat.nix { })
       #(pkgs.haskellPackages.ghcWithPackages (pkgs: with pkgs; [
       #  cabal-install
       #]))
       #stack
-      zim
+      # zim
       fabric-ai
       #libguestfs
       immich-cli
-      pipx
+      #pipx
       ncdu
       jq
       cargo-watch
       popsicle
-      (pkgs.callPackage ./pkgs/tuido.nix { })
+      #(pkgs.callPackage ./pkgs/tuido.nix { })
       #variety
       #	xdg-desktop-portal
       jellyfin-media-player
-      discord
+      # discord
       #	kdePackages.xwaylandvideobridge
       lsof
-      podman
+      #podman
       rpi-imager
       #sshfs
       kubectl
@@ -404,7 +469,7 @@ in {
       #	ca-certificates
       asciinema
       mesa-demos
-      waveterm
+      #waveterm
       dig
       specialArgs.inputs.envycontrol.packages.${system}.default
       #specialArgs.netsecrets.packages.${system}.netsecrets
@@ -413,7 +478,7 @@ in {
       #	zed-editor
       #mysql-workbench
       #dbeaver-bin
-      wmctrl
+      #wmctrl
       # maybe put the above package elsewhere
       sshpass
       ansible
@@ -443,7 +508,7 @@ in {
       sbctl
       efibootmgr
       #anki
-      cryfs
+      #cryfs
       #sherlock
       #shell-gpt
       feh
@@ -451,8 +516,8 @@ in {
       yt-dlp
       gh
       file
-      avml
-      volatility3
+      # avml
+      # volatility3
       wget
       #        bsd-finger
       #pnpm
@@ -462,8 +527,8 @@ in {
       home-manager
       #        swift
       #       xclicker
-      lutris-free
-      android-studio
+      #lutris-free
+      # android-studio
       legendary-gl
       wine
       nmap
@@ -479,7 +544,8 @@ in {
       protonmail-bridge
       #guake
       cloudflared
-      vitetris
+      # tetris
+      #vitetris
 
       ettercap
 	
@@ -508,8 +574,9 @@ in {
 
       git-credential-manager
       python3
-      logseq
+      #logseq
       rage
+      libreoffice
       onlyoffice-desktopeditors
       #onlyoffice-bin (deprecated)
       #vesktop
@@ -517,7 +584,7 @@ in {
 
       pay-respects
       zoxide
-      chezmoi
+      # chezmoi
       xorg.xhost
 
       #latte-dock
@@ -541,7 +608,7 @@ in {
 
       emacs
 
-      # vscodium
+      #vscodium
       pcscliteWithPolkit.out
       pcsclite
       gnupg
@@ -581,6 +648,7 @@ in {
 
     };
   };
+  virtualisation.oci-containers.containers.coweire.autoStart = false;
   virtualisation.oci-containers.containers.coweire.image =
     "cowrie/cowrie:latest";
   virtualisation.oci-containers.containers.coweire.ports = [ "22:2222" ];
@@ -597,7 +665,7 @@ in {
   nixpkgs.config.nvidia.acceptLicense = true;
   services.xserver.videoDrivers = [ 
 	"modesetting"
-	#"nvidia" 
+	"nvidia" 
   ];
 
   #hardware.opengl.enable = true;
@@ -607,18 +675,19 @@ in {
   hardware.graphics.enable = true;
   hardware.graphics.enable32Bit = true;
 
+  hardware.nvidia-container-toolkit.enable = true;
   hardware.nvidia = {
     #package = unstablePkgs
-    package = config.boot.kernelPackages.nvidiaPackages.beta;
-    #package = config.boot.kernelPackages.nvidiaPackages.stable;
+    #package = config.boot.kernelPackages.nvidiaPackages.beta;
+    package = config.boot.kernelPackages.nvidiaPackages.stable;
     modesetting.enable = true;
-    open = false;
+    open = true;
     nvidiaSettings = true;
-    dynamicBoost.enable = true;
+    dynamicBoost.enable = false;
 
     powerManagement = {
       enable = true;
-
+      finegrained = true;
     };
     prime = {
       intelBusId = "PCI:00:02:0";
@@ -635,6 +704,7 @@ in {
   };
 
   environment.sessionVariables = {
+    KWIN_DRM_NO_AMS = "1";
     #KWIN_DRM_DEVICES = "/dev/dri/by-path/pci-0000:00:02.0-card";
     #       "NIX_CONF_DIR" = "/etc/nixos/nix/";
   };
@@ -661,7 +731,7 @@ in {
             gdm = {
 
               enable = true;
-              wayland = true;
+              #wayland = true;
 
             };
           };
@@ -726,7 +796,9 @@ in {
       #	ACTION=="add", SUBSYSTEM=="pci", ATTR{vendor}=="0x10de", ATTR{class}=="0x03[0-9]*", ATTR{power/control}="auto", ATTR{remove}="1"
       #'';
       boot.blacklistedKernelModules =
-        [ "nouveau" "nvidia" "nvidia_drm" "nvidia_modeset" ];
+        [ 
+	  "nouveau" "nvidia" "nvidia_drm" "nvidia_modeset" 
+	];
     };
   };
 
@@ -756,6 +828,16 @@ in {
   ];
 
   # kernal packages
+boot.blacklistedKernelModules = [ "hid_sony" ];
+boot.kernelParams = [
+  #"netconsole=6666@192.168.0.152/enp46s0,6666@192.168.0.22/"
+  #"drm.debug=0x1f"
+  #"log_buf_len=64M"
+  #"nvidia.NVreg_PreserveVideoMemoryAllocations=0"
+];
+#boot.kernelModules = [
+#"ntsync"
+#];
   #boot.`kernelParams = [ "
   #boot.blacklistedKernelModules = [ "nouveau" ];
   boot.kernelPackages =
@@ -784,7 +866,9 @@ in {
   boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
 
   boot.kernelModules = [
+    "ntsync"
 
+    #"acer_wmi"
     "facer"
     "wmi"
     "sparse-keymap"
@@ -796,6 +880,7 @@ in {
   ];
 
   boot.extraModprobeConfig = ''
+    options acer_wmi predator_v4=1
     #options v4l2loopback exclusive_caps=1 video_nr=10 card_label="Virtual Camera"
   '';
 
@@ -874,6 +959,11 @@ in {
         #    install_url = "https://addons.mozilla.org/firefox/downloads/latest/web-browsing-journal/latest.xpi";
         #    installation_mode = "force_installed";
         #};
+        # Xbrowsersync
+        "{019b606a-6f61-4d01-af2a-cea528f606da}" = {
+	  install_url = "https://addons.mozilla.org/firefox/downloads/latest/xbs/latest.xpi";
+	  installation_mode = "force_installed";
+	 };
         "{20255b4d-cc15-4ca1-98e6-e63426621e75}" = {
           install_url =
             "https://addons.mozilla.org/firefox/downloads/latest/scrollsave/latest.xpi";
@@ -999,6 +1089,7 @@ in {
   imports = [
     #specialArgs.nix-gaming.nixosModules.platformOptimizations
     ./expressvpn.nix
+    ./services/nbfc.nix
     ./tilers/hyprland/hyprland-module/nixos-module.nix
     #niri.nixosModules.niri
     aagl.module
@@ -1119,6 +1210,7 @@ in {
 
   '';
 
+  fonts.fontDir.enable = true;
   fonts.packages = with pkgs; [
     noto-fonts
     noto-fonts-cjk-sans
@@ -1169,6 +1261,9 @@ in {
     "electron-27.3.11"
     "electron-25.9.0"
     "electron-28.3.3"
+    "electron-39.8.10"
+    "librewolf-151.0.2-1"
+    "librewolf-unwrapped-151.0.2-1"
     "qtwebengine-5.15.19"
   ];
 

@@ -18,7 +18,7 @@ stdenvNoCC.mkDerivation rec {
     rev = "refs/heads/master";
     fetchSubmodules = true;
     leaveDotGit = true;
-    sha256 = "sha256-KUkrAZHXjo0q7e5uL6npUhx+tQhj7X9wEE8JINRjrKI=";
+    sha256 = "sha256-cKpw+5Xdsdy3UtxOw7bQz8h1ehiYbFcQobUGWXn5+Y4=";
 #    sha256 = "sha256-/CQ3L2mt8OTsleMNWpZcFql6e8/+4nj+VGBt204wusQ=";
   };
   
